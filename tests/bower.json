@@ -1,0 +1,20 @@
+{
+  "name": "chai-test-template",
+  "version": "0.1.0",
+  "main": "index.html",
+  "ignore": [
+    "**/.*",
+    "bower_components"
+  ],
+  "dependencies": {
+    "jquery": "*",
+    "backbone": "*",
+    "underscore": "*",
+    "marionette": "*",
+    "mocha": "*",
+    "chai": "*",
+    "sinon-chai": "*",
+    "sinon": "http://sinonjs.org/releases/sinon.js",
+    "chai-backbone": "*"
+  }
+}
