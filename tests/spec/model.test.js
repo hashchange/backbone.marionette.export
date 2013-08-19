@@ -72,15 +72,18 @@
 
             } );
 
-            it( 'accepts a method reference. export() evaluates the method and returns it as a property', function () {
+            it( 'throws an error when being assigned a method reference', function () {
 
+                // Assigning method references had been implemented and did work, but introduced unnecessary complexity
+                // and was difficult to use correctly.
                 var Model = Backbone.Model.extend( {
                     initialize: function () { this.exportable = [ this.method ]; },
                     method: function () { return "returning a value"; }
                 } );
                 var model = new Model();
 
-                model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
+                var exportFunction = _.bind( model.export, model );
+                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
 
             } );
 

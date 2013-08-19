@@ -21,7 +21,7 @@
             this.modelsWithExportedMethods = [
                 new ModelWithExportedMethods( { modelProp: 1 } ),
                 new ModelWithExportedMethods( { modelProp: 2 } ),
-                new ModelWithExportedMethods( { modelProp: 3 } ),
+                new ModelWithExportedMethods( { modelProp: 3 } )
             ];
 
             this.CollectionWithMethods = Backbone.Collection.extend( {
@@ -107,14 +107,15 @@
 
             } );
 
-            it( 'accepts a method reference. export() evaluates the method and returns it as a property', function () {
+            it( 'throws an error when being assigned a method reference', function () {
 
                 var Collection = this.CollectionWithMethods.extend( {
                     initialize: function () { this.exportable = [ this.method ]; }
                 } );
                 var collection = new Collection( this.models );
 
-                collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
+                var exportFunction = _.bind( collection.export, collection );
+                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
 
             } );
 

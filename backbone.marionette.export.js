@@ -45,22 +45,8 @@
  * - an array of names:
  *         var model = Backbone.Model.extend({ exportable: ["foo", "this.bar"] });
  *
- * - a reference to a method when it is possible, e.g in the initialize method:
- *         var model = Backbone.Model.extend({
- *             initialize: function(){
- *                 this.exportable = [ this.foo, this.bar ];
- *             }
- *         });
- *   Assignment by reference is not recommended, though, because it can easily trip you up. The gotchas:
- *
- *   - The reference assigned to to `this.exportable` MUST be wrapped in an array. Without an array, the method might be
- *     picked up under the wrong method name, "exportable". Any mistake will be difficult to spot because the behaviour
- *     depends on the browser (for instance, it worked ok in headless testing with PhantomJS, but failed in Chrome).
- *
- *     So don't ever do this: `initialize: function(){ this.exportable = this.foo; }`.
- *
- *   - The reference can't be assigned before the model instance is available. Do it in `initialize()`. By constrast,
- *     this won't work: `var model = Backbone.Model.extend({ exportable: this.foo });`.
+ * With models, only methods can be marked as exportable. Collections, by contrast, also accept names of (non-function)
+ * properties.
  *
  * ...
  */
@@ -164,17 +150,6 @@
                     name = method.indexOf( "this." ) == 0 ? method.substr( 5 ) : method;
                     if ( ! this[name] ) throw new Error( "Can't export \"" + name + "\". The method doesn't exist" );
                     method = this[name];
-
-                } else if ( _.isFunction( method ) ) {
-
-                    // Get the method name from the reference.
-                    name = _.find(
-                        _.functions( this ),
-                        function ( name ) {
-                            return this[name] === method;
-                        },
-                        this
-                    );
 
                 } else {
                     throw new Error( "'exportable' property: Invalid method identifier" );
