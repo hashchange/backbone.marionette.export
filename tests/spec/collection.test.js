@@ -107,18 +107,6 @@
 
             } );
 
-            it( 'throws an error when being assigned a method reference', function () {
-
-                var Collection = this.CollectionWithMethods.extend( {
-                    initialize: function () { this.exportable = [ this.method ]; }
-                } );
-                var collection = new Collection( this.models );
-
-                var exportFunction = _.bind( collection.export, collection );
-                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
-
-            } );
-
             it( 'accepts an array of method names. export() evaluates all of them and returns them as properties', function () {
 
                 var Collection = this.CollectionWithMethods.extend( {
@@ -129,6 +117,18 @@
 
                 collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
                 collection.export().should.have.a.property( 'anotherMethod' ).with.a.string( "another collection method, returning a value" );
+
+            } );
+
+            it( 'throws an error when being assigned a method reference', function () {
+
+                var Collection = this.CollectionWithMethods.extend( {
+                    initialize: function () { this.exportable = [ this.method ]; }
+                } );
+                var collection = new Collection( this.models );
+
+                var exportFunction = _.bind( collection.export, collection );
+                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
 
             } );
 

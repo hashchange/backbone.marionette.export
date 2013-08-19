@@ -5,12 +5,19 @@
 
     describe( 'A Backbone model is enhanced with the export functionality.', function () {
 
+        beforeEach( function () {
+
+            this.ModelWithMethod = Backbone.Model.extend( {
+                method: function () { return "returning a value"; }
+            } );
+
+        });
+
         describe( 'By default, export()', function () {
 
             it( 'returns a hash of model properties, exactly like toJSON()', function () {
 
-                var Model = Backbone.Model.extend( {} );
-                var model = new Model();
+                var model = new Backbone.Model();
 
                 model.set( { property: "a value", anotherProperty: "another value" } );
                 var propHash = model.toJSON();
@@ -20,10 +27,7 @@
 
             it( 'does not call any method', function () {
 
-                var Model = Backbone.Model.extend( {
-                    method: function () { return "returning a value"; }
-                } );
-                var model = new Model();
+                var model = new this.ModelWithMethod();
                 sinon.spy( model, "method" );
 
                 model.export();
@@ -33,10 +37,7 @@
 
             it( 'does not alter the properties hash, even if custom methods have been added to the model', function () {
 
-                var Model = Backbone.Model.extend( {
-                    method: function () { return "returning a value"; }
-                } );
-                var model = new Model();
+                var model = new this.ModelWithMethod();
 
                 model.set( { property: "a value", anotherProperty: "another value" } );
                 var propHash = model.toJSON();
@@ -50,10 +51,7 @@
 
             it( 'accepts a string with the name of the method. export() evaluates the method and returns it as a property', function () {
 
-                var Model = Backbone.Model.extend( {
-                    exportable: "method",
-                    method: function () { return "returning a value"; }
-                } );
+                var Model = this.ModelWithMethod.extend( { exportable: "method" } );
                 var model = new Model();
 
                 model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
@@ -62,28 +60,10 @@
 
             it( 'accepts a string in the format "this.method". export() evaluates the method and returns it as a property', function () {
 
-                var Model = Backbone.Model.extend( {
-                    exportable: "this.method",
-                    method: function () { return "returning a value"; }
-                } );
+                var Model = this.ModelWithMethod.extend( { exportable: "this.method" } );
                 var model = new Model();
 
                 model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
-
-            } );
-
-            it( 'throws an error when being assigned a method reference', function () {
-
-                // Assigning method references had been implemented and did work, but introduced unnecessary complexity
-                // and was difficult to use correctly.
-                var Model = Backbone.Model.extend( {
-                    initialize: function () { this.exportable = [ this.method ]; },
-                    method: function () { return "returning a value"; }
-                } );
-                var model = new Model();
-
-                var exportFunction = _.bind( model.export, model );
-                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
 
             } );
 
@@ -101,12 +81,23 @@
 
             } );
 
+            it( 'throws an error when being assigned a method reference', function () {
+
+                // Assigning method references had been implemented and did work, but introduced unnecessary complexity
+                // and was difficult to use correctly.
+                var Model = this.ModelWithMethod.extend( {
+                    initialize: function () { this.exportable = [ this.method ]; }
+                } );
+                var model = new Model();
+
+                var exportFunction = _.bind( model.export, model );
+                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+
+            } );
+
             it( 'throws an error when one of the methods doesn\'t exist', function () {
 
-                var Model = Backbone.Model.extend( {
-                    exportable: "missing",
-                    method: function () { return "returning a value"; }
-                } );
+                var Model = this.ModelWithMethod.extend( { exportable: "missing" } );
                 var model = new Model();
 
                 var exportFunction = _.bind( model.export, model );
@@ -133,8 +124,7 @@
 
             it( 'is run by export(). It receives a hash of the model properties - the toJSON() data - as an argument', function () {
 
-                var Model = Backbone.Model.extend( {} );
-                var model = new Model();
+                var model = new Backbone.Model();
                 sinon.spy( model, "onExport" );
 
                 model.set( { property: "a value", anotherProperty: "another value" } );
@@ -147,15 +137,12 @@
 
             it( 'receives the properties hash last, ie after the methods marked as "exportable" have been transformed into properties of the hash', function () {
 
-                var Model = Backbone.Model.extend( {
-                    exportable: "method",
-                    method: function () { return "method return value"; }
-                } );
+                var Model = this.ModelWithMethod.extend( { exportable: "method" } );
                 var model = new Model();
                 sinon.spy( model, "onExport" );
 
                 model.export();
-                model.onExport.should.have.been.calledWithExactly( { method: "method return value" } );
+                model.onExport.should.have.been.calledWithExactly( { method: "returning a value" } );
 
             } );
 
@@ -180,8 +167,7 @@
 
             it( 'is run when export() is called', function () {
 
-                var Model = Backbone.Model.extend( {} );
-                var model = new Model();
+                var model = new Backbone.Model();
                 sinon.spy( model, "onBeforeExport" );
 
                 model.export();
@@ -221,8 +207,7 @@
 
             it( 'runs before onExport()', function () {
 
-                var Model = Backbone.Model.extend( {} );
-                var model = new Model();
+                var model = new Backbone.Model();
                 sinon.spy( model, "onBeforeExport" );
                 sinon.spy( model, "onExport" );
 
@@ -237,8 +222,7 @@
 
             it( 'is run when export() is called', function () {
 
-                var Model = Backbone.Model.extend( {} );
-                var model = new Model();
+                var model = new Backbone.Model();
                 sinon.spy( model, "onAfterExport" );
 
                 model.export();
@@ -280,8 +264,7 @@
 
             it( 'runs after onExport()', function () {
 
-                var Model = Backbone.Model.extend( {} );
-                var model = new Model();
+                var model = new Backbone.Model();
                 sinon.spy( model, "onAfterExport" );
                 sinon.spy( model, "onExport" );
 
