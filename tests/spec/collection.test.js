@@ -181,6 +181,88 @@
 
             } );
 
+            it( 'calls export() recursively on models which are returned by an exported collection method', function () {
+
+                var InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
+                var innerModel = new InnerModel();
+                sinon.spy( innerModel, "export" );
+
+                var Collection = Backbone.Collection.extend( {
+                    exportable: "returnsModel",
+                    returnsModel: function () { return innerModel; }
+                } );
+                var collection = new Collection();
+
+                var exported = collection.export();
+
+                innerModel.export.should.have.been.calledOnce;
+                exported.should.be.deep.equal( { returnsModel: innerModel.export() } );
+
+            } );
+
+            it( 'calls export() recursively on inner, nested collections which are returned by an exported collection method', function () {
+
+                var InnerCollection = Backbone.Collection.extend( {
+                    exportable: "method",
+                    method: function() { return "returned by method of inner collection"; }
+                } );
+                var innerCollection = new InnerCollection();
+                sinon.spy( innerCollection, "export" );
+
+                var Collection = Backbone.Collection.extend( {
+                    exportable: "returnsCollection",
+                    returnsCollection: function () { return innerCollection; }
+                } );
+                var collection = new Collection();
+
+                var exported = collection.export();
+
+                innerCollection.export.should.have.been.calledOnce;
+                exported.should.be.deep.equal( { returnsCollection: innerCollection.export() } );
+
+            } );
+
+            it( 'calls export() recursively on models which are assigned to an exported collection property', function () {
+
+                var InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
+                var innerModel = new InnerModel();
+                sinon.spy( innerModel, "export" );
+
+                var Collection = Backbone.Collection.extend( {
+                    exportable: "propertyHoldingModel",
+                    propertyHoldingModel: innerModel
+                } );
+                var collection = new Collection();
+
+                var exported = collection.export();
+
+                innerModel.export.should.have.been.calledOnce;
+                exported.should.be.deep.equal( { propertyHoldingModel: innerModel.export() } );
+
+            } );
+
+            it( 'calls export() recursively on inner, nested collections which are assigned to an exported collection property', function () {
+
+                var InnerCollection = Backbone.Collection.extend( {
+                    exportable: "method",
+                    method: function() { return "returned by method of inner collection"; }
+                } );
+                var innerCollection = new InnerCollection();
+                sinon.spy( innerCollection, "export" );
+
+                var Collection = Backbone.Collection.extend( {
+                    exportable: "propertyHoldingCollection",
+                    propertyHoldingCollection: innerCollection
+                } );
+                var collection = new Collection();
+
+                var exported = collection.export();
+
+                innerCollection.export.should.have.been.calledOnce;
+                exported.should.be.deep.equal( { propertyHoldingCollection: innerCollection.export() } );
+
+            } );
+
         } );
 
         describe( 'The onExport() handler', function () {

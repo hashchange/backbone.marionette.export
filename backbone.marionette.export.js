@@ -182,6 +182,11 @@
 
                 }
 
+                // Call export() recursively if the property holds a Backbone model or collection
+                if ( ( data[name] instanceof Backbone.Model || data[name] instanceof Backbone.Collection ) && data[name].export ) {
+                    data[name] = data[name].export();
+                }
+
             }, this );
         }
 

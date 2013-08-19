@@ -118,6 +118,47 @@
 
             } );
 
+            it( 'calls export() recursively on models which are returned by an exported method', function () {
+
+                var InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
+                var innerModel = new InnerModel();
+                sinon.spy( innerModel, "export" );
+
+                var Model = Backbone.Model.extend( {
+                    exportable: "returnsModel",
+                    returnsModel: function () { return innerModel; }
+                } );
+                var model = new Model();
+
+                var exported = model.export();
+
+                innerModel.export.should.have.been.calledOnce;
+                exported.should.be.deep.equal( { returnsModel: innerModel.export() } );
+
+            } );
+
+            it( 'calls export() recursively on collections which are returned by an exported method', function () {
+
+                var InnerCollection = Backbone.Collection.extend( {
+                    exportable: "method",
+                    method: function() { return "returned by method of inner collection"; }
+                } );
+                var innerCollection = new InnerCollection();
+                sinon.spy( innerCollection, "export" );
+
+                var Model = Backbone.Model.extend( {
+                    exportable: "returnsCollection",
+                    returnsCollection: function () { return innerCollection; }
+                } );
+                var model = new Model();
+
+                var exported = model.export();
+
+                innerCollection.export.should.have.been.calledOnce;
+                exported.should.be.deep.equal( { returnsCollection: innerCollection.export() } );
+
+            } );
+
         } );
 
         describe( 'The onExport() handler', function () {
