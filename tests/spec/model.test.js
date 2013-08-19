@@ -111,6 +111,19 @@
 
             } );
 
+            it( 'throws an error when one of the methods is in fact not a function', function () {
+
+                var Model = Backbone.Model.extend( {
+                    exportable: "property",
+                    property: "ordinary property, not a method"
+                } );
+                var model = new Model();
+
+                var exportFunction = _.bind( model.export, model );
+                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier \"property\", does not point to a function" );
+
+            } );
+
         } );
 
         describe( 'The onExport() handler', function () {

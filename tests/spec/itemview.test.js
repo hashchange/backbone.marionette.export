@@ -60,29 +60,7 @@
 
             } );
 
-            it( 'makes the exported methods and properties of the collection available to the template, as top-level properties of the data', function () {
-
-                var Model = Backbone.Model.extend( {
-                    exportable: "method",
-                    method: function () { return "a method return value, model cid = " + this.cid; }
-                } );
-
-                var Collection = Backbone.Collection.extend( {
-                    exportable: "collectionMethod",
-                    collectionMethod: function () { return "a return value from a collection method"; }
-                } );
-                var collection = new Collection( [ new Model(), new Model(), new Model() ] );
-
-                var itemView = new this.ItemView( { collection: collection } );
-                sinon.spy( itemView, "template" );
-
-                itemView.render();
-
-                itemView.template.should.have.been.calledWithExactly( sinon.match.has("collectionMethod", "a return value from a collection method" ) );
-
-            } );
-
-            it( 'makes the exported methods and properties of the collection available to the template in an "items.meta" property', function () {
+            it( 'makes the exported methods and properties of the collection available to the template as properties of the "items" array', function () {
 
                 var Model = Backbone.Model.extend( {
                     exportable: "method",
@@ -100,8 +78,13 @@
 
                 itemView.render();
                 itemView.template.should.have.been.calledWithExactly( sinon.match( function ( templateData ) {
-                    return templateData.items && templateData.items.meta && _.isEqual( templateData.items.meta, collection.export().meta );
+                    return templateData.items && _.isEqual( _.pairs( templateData.items ), _.pairs( collection.export() ) );
                 } ) );
+                //
+                // NB: _.isEqual does compare arrays, but does NOT pick up any custom properties attached to the array
+                // objects. That appears to be on purpose, see http://goo.gl/R3WlXu . The docs talk about "an optimized
+                // deep comparison". To work around it, we convert the arrays into key-value hashes with _.pairs first,
+                // and then compare those hashes.
 
             } );
 
@@ -126,8 +109,8 @@
                 //
                 // NB: sinon.match.has does compare the array, but does NOT pick up any custom properties attached to
                 // the array object. Here, we only verify that the content of the arrays, ie the items in it, are
-                // identical. We can't verify full equality for the array objects this way.
-                // See https://github.com/cjohansen/Sinon.JS/issues/315
+                // identical. We can't verify full equality for the array objects this way - until the patch for it has
+                // landed in a Sinon release. See https://github.com/cjohansen/Sinon.JS/issues/315
 
             } );
 

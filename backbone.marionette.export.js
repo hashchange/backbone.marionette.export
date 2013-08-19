@@ -64,8 +64,32 @@
  *
  * ...
  */
-( function( Backbone ) {
+( function( Backbone, _ ) {
     "use strict";
+
+    /**
+     * Captures all properties of an object, all the way up the prototype chain. Returns them as an array of property
+     * names.
+     *
+     * Code lifted from the MDC docs, http://goo.gl/hw2h4G
+     *
+     * @param obj
+     * @returns string[]
+     */
+    function listAllProperties ( obj ) {
+
+        var objectToInspect;
+        var result = [];
+
+        for ( objectToInspect = obj; objectToInspect !== null; objectToInspect = Object.getPrototypeOf( objectToInspect ) ) {
+            result = result.concat( Object.getOwnPropertyNames( objectToInspect ) );
+        }
+
+        return _.unique( result );
+    }
+
+    // Capture all native array properties.
+    var nativeArrayProperties =  listAllProperties( [] );
 
     /**
      * Is called before export(). Use it to manipulate or add state before export. No-op by default, implement as
@@ -78,7 +102,7 @@
     /**
      * Is called after export(). No-op by default, implement as needed.
      */
-    Backbone.Model.prototype.onAfterExport = Backbone.Collection.prototype.onBeforeExport = function () {
+    Backbone.Model.prototype.onAfterExport = Backbone.Collection.prototype.onAfterExport = function () {
         // noop by default.
     };
 
@@ -99,7 +123,7 @@
     };
 
     Backbone.Model.prototype.export = Backbone.Collection.prototype.export = function () {
-        var data, exportable;
+        var data, exportable, conflicts;
 
         // Before all else, run the onBeforeExport handler.
         if ( this.onBeforeExport ) this.onBeforeExport();
@@ -156,23 +180,30 @@
                     throw new Error( "'exportable' property: Invalid method identifier" );
                 }
 
-                if ( this instanceof Backbone.Collection ) {
+                if ( _.isFunction( method )) {
 
-                    // Collection:
-                    // The exported collection is simply an array (of models). If any methods or properties of the
-                    // collection itself are to be exported, they get transferred to a 'meta' property which is
-                    // created on the array object.
-                    //
-                    // The exported methods are not attached to the array object directly, as top-level properties,
-                    // because their names could clash with those of native array properties/methods.
-                    if ( !data.meta ) data.meta = {};
-                    data.meta[name] = method.apply( this );
-
-                } else if ( _.isFunction( method ) ) {
-
-                    // Model: Only act on a real method. If `method` is a reference to a property, just move on. Model
-                    // properties are passed to the templates anyway.
+                    // Call the method and turn it into a property of the exported object.
                     data[name] = method.apply( this );
+
+                } else {
+
+                    if ( this instanceof Backbone.Model ) {
+
+                        // Model: Only act on a real method. Here, `method` is a reference to an ordinary property, ie
+                        // one which is not a function. Throw an error because a reference of that kind is likely to be
+                        // a mistake, or else bad design.
+                        //
+                        // Model data must be created with Model.set and must not be handled here. It is captured by
+                        // toJSON() and thus available to the templates anyway.
+                        throw new Error( "'exportable' property: Invalid method identifier \"" + name + "\", does not point to a function" );
+
+                    } else {
+
+                        // Collection: Export an ordinary, non-function property. There isn't a native way to make a
+                        // collection property avaialble to templates, so exporting it is legit.
+                        data[name] = this[name];
+
+                    }
 
                 }
 
@@ -185,6 +216,21 @@
         // Trigger the onAfterExport handler just before returning.
         if ( this.onAfterExport ) this.onAfterExport();
 
+        // Collection:
+        // The exported collection is simply an array (of model hashes). But the native array object is augmented with
+        // properties created by the export.
+        //
+        // These properties must not be allowed to overwrite native array methods or properties. Check the exported
+        // property names and throw an error if they clash with the native ones.
+        if ( this instanceof Backbone.Collection ) {
+
+            conflicts = _.intersection( nativeArrayProperties,  _.keys( data ) ) ;
+            if ( conflicts.length ) {
+                throw new Error( "Can't export a property with a name which is reserved for a native array property. Offending properties: " + conflicts );
+            }
+
+        }
+
         return data;
     };
 
@@ -192,7 +238,7 @@
 
         Backbone.Marionette.ItemView.prototype.serializeData = function () {
             // Largely duplicating the original serializeData() method in Marionette.ItemView, but using Model.export
-            // instead of Model.toJSON as a data source if Model.export is available.
+            // instead of Model.toJSON as a data source if Model.export is available. Ditto for Collection.export.
             //
             // For the original code, taken from Marionette 1.0.4, see
             // https://github.com/marionettejs/backbone.marionette/blob/v1.0.4/src/marionette.itemview.js#L21
@@ -204,7 +250,6 @@
             }
             else if (this.collection) {
                 data = { items: this.collection.export && this.collection.export() || this.collection.toJSON() };
-                if ( data.items.meta ) _.extend( data, data.items.meta );
             }
 
             return data;
@@ -212,4 +257,4 @@
 
     }
 
-}( Backbone ));
+}( Backbone, _ ));
