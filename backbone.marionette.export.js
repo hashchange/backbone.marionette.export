@@ -1,55 +1,15 @@
 /**
- * Use case
- * ========
+ * Backbone.Marionette.Export
+ * ==========================
  *
- * Out of the box, templates handled by Marionette views have access to all properties of a model or collection, but
- * not to the output of its methods.
+ * Backbone.Marionette.Export is a plugin for Backbone, and specifically targeted at Marionette. It makes the methods of
+ * models and collections available to templates.
  *
- * With the enhancements here,
- *
- * - you can select model/collection methods to have their output available in any template, under the name of the method
- * - you can also modify the data before it is handed to a template, by implementing an `onExport` handler
- * - you can manipulate the model or collection state itself before it is passed to a template, using an `onBeforeExport`
- *   handler.
- * - you can clean up by implementing the `onAfterEport` handler.
- *
- * Example:
- *
- * ...
- *
- * Dependencies
- * ============
- *
- * Backbone is the only dependency. It makes most sense to use the enhancements with Marionette views, though.
- * If present, Marionette is modified to respond to the export() functionality, and Marionette views pass the exported
- * properties to the templates automatically.
- *
- * Loading
- * =======
- *
- * Just include this script after Backbone and Marionette (if you use Marionette) are loaded. In case you use require.js,
- * add script to shim and describe it in the requirements.
- *
- * Usage
- * =====
- *
- * ...
- *
- *
- * The `exportable` property accepts
- *
- * - a method name as a string:
- *         var model = Backbone.Model.extend({ exportable: "foo" });
- *         var model = Backbone.Model.extend({ exportable: "this.foo" });
- *
- * - an array of names:
- *         var model = Backbone.Model.extend({ exportable: ["foo", "this.bar"] });
- *
- * With models, only methods can be marked as exportable. Collections, by contrast, also accept names of (non-function)
- * properties.
- *
- * ...
+ * @author  Michael Heim, http://www.zeilenwechsel.de/
+ * @license MIT, http://www.opensource.org/licenses/mit-license.php
+ * @version 1.0.0
  */
+
 ( function( Backbone, _ ) {
     "use strict";
 
