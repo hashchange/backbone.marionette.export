@@ -15,6 +15,7 @@
     "chai": "*",
     "sinon-chai": "*",
     "sinon": "http://sinonjs.org/releases/sinon.js",
-    "chai-backbone": "*"
+    "chai-backbone": "*",
+    "lodash": "*"
   }
 }

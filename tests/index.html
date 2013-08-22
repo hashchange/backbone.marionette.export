@@ -13,7 +13,17 @@
     
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
     <script src="bower_components/jquery/jquery.js"></script>
-    <script src="bower_components/underscore/underscore.js"></script>
+    <script>
+        document.write(
+            '<script src="' +
+            (
+                location.hash == '#lodash' ?
+                'vendor_components/lodash-custom/lodash.underscore.custom.js' :
+                'bower_components/underscore/underscore.js'
+            ) +
+            '"><\/script>'
+        );
+    </script>
     <script src="bower_components/backbone/backbone.js"></script>
     <script src="bower_components/marionette/lib/backbone.marionette.js"></script>
 

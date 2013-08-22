@@ -69,7 +69,17 @@
     };
 
     Backbone.Model.prototype.export = Backbone.Collection.prototype.export = function () {
-        var data, exportable, conflicts;
+        var data, exportable, conflicts, hops;
+
+        function allowExport ( obj ) {
+            return (
+                obj && obj.export
+                && ( obj instanceof Backbone.Model || obj instanceof Backbone.Collection )
+                && hops < obj.export.maxHops
+            );
+        }
+
+        hops = arguments.length ? arguments[0] : 0;
 
         // Before all else, run the onBeforeExport handler.
         if ( this.onBeforeExport ) this.onBeforeExport();
@@ -82,13 +92,34 @@
             //
             // We use the enhancements of model.export instead. But still, we get no more than an array of model hashes
             // at this point.
-            data = this.map( function ( model ) { return model.export(); } );
+            data = this.map( function ( model ) { return allowExport( model ) ? model.export( hops + 1 ) : model; } );
 
         } else {
 
-            // Model: Get the model properties for export to the template. This is the only thing Marionette does, out
-            // of the box.
-            data = this.toJSON();
+            // Model
+
+            if ( _.cloneDeep ) {
+
+                // With Lo-dash / deep-cloning ability: Deep clone the model attributes, calling export() on nested
+                // Backbone models and collections in the process (up to the maximum recursion depth, then switching to
+                // cloning without calls to export() ).
+                data = _.cloneDeep( this.attributes, function ( attribute ) {
+                    return allowExport( attribute ) ? attribute.export( hops + 1 ) : undefined; }
+                );
+
+            } else {
+
+                // Model: Get the model properties for export to the template. This is the only thing Marionette does, out
+                // of the box.
+                data = this.toJSON();                       // this is the same as _.clone(this.attributes);
+
+                // Call export() recursively on atrributes holding a Backbone model or collection, up to the maximum
+                // recursion depth.
+                _.each( data, function ( attrValue, attrName, data ) {
+                    if ( allowExport( attrValue ) ) data[attrName] = attrValue.export( hops + 1 );
+                } );
+
+            }
 
         }
 
@@ -142,10 +173,20 @@
 
                 }
 
-                // Call export() recursively if the property holds a Backbone model or collection
-                if ( ( data[name] instanceof Backbone.Model || data[name] instanceof Backbone.Collection ) && data[name].export ) {
-                    data[name] = data[name].export();
+                // Call export() recursively if the property holds a Backbone model or collection, up to the maximum
+                // recursion depth.
+                if ( _.cloneDeep ) {
+
+                    // With Lo-dash / deep-cloning ability: clone other objects, too, and also call export on Backbone
+                    // models or collections deeply nested within those objects.
+                    data[name] = _.cloneDeep( data[name], function ( value ) {
+                            return allowExport( value ) ? value.export( hops + 1 ) : undefined;
+                    } );
+
+                } else {
+                    if ( allowExport( data[name] ) ) data[name] = data[name].export( hops + 1 );
                 }
+
 
             }, this );
         }
@@ -173,6 +214,8 @@
 
         return data;
     };
+
+    Backbone.Model.prototype.export.maxHops = Backbone.Collection.prototype.export.maxHops = 4;
 
     if ( Backbone.Marionette ) {
 

@@ -3,6 +3,20 @@
 
 (function () {
 
+    var it_accepts = it,
+        it_throws_an_error = it,
+        they = it,
+        expectation = it;
+
+    // Detect the ability to create deep clones with the utility library (Lo-dash vs Underscore), and make test execution
+    // dependent on it for affected tests.
+    var withCloneDeep_it = ( _.cloneDeep ? it : it.skip ),
+        withCloneDeep_describe = ( _.cloneDeep ? describe : describe.skip );
+
+    function deepCopy ( obj ) {
+        return jQuery.extend( true, {}, obj );
+    }
+
     describe( 'A Backbone model is enhanced with the export functionality.', function () {
 
         beforeEach( function () {
@@ -15,7 +29,7 @@
 
         describe( 'By default, export()', function () {
 
-            it( 'returns a hash of model properties, exactly like toJSON()', function () {
+            it( 'returns a hash of model properties, just like toJSON()', function () {
 
                 var model = new Backbone.Model();
 
@@ -47,115 +61,547 @@
 
         } );
 
-        describe( 'The "exportable" property stores the methods which are called on export. It', function () {
+        describe( 'The "exportable" property stores the methods which are called on export.', function () {
 
-            it( 'accepts a string with the name of the method. export() evaluates the method and returns it as a property', function () {
+            describe( 'It accepts', function () {
 
-                var Model = this.ModelWithMethod.extend( { exportable: "method" } );
-                var model = new Model();
+                it_accepts( 'a string with the name of the method. export() evaluates the method and returns it as a property', function () {
 
-                model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
+                    var Model = this.ModelWithMethod.extend( { exportable: "method" } );
+                    var model = new Model();
 
-            } );
+                    model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
 
-            it( 'accepts a string in the format "this.method". export() evaluates the method and returns it as a property', function () {
-
-                var Model = this.ModelWithMethod.extend( { exportable: "this.method" } );
-                var model = new Model();
-
-                model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
-
-            } );
-
-            it( 'accepts an array of method names. export() evaluates all of them and returns them as properties', function () {
-
-                var Model = Backbone.Model.extend( {
-                    exportable: [ "method", "this.anotherMethod" ],
-                    method: function () { return "returning a value"; },
-                    anotherMethod: function () { return "returning another value"; }
                 } );
-                var model = new Model();
 
-                model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
-                model.export().should.have.a.property( 'anotherMethod' ).with.a.string( "returning another value" );
+                it_accepts( 'a string in the format "this.method". export() evaluates the method and returns it as a property', function () {
+
+                    var Model = this.ModelWithMethod.extend( { exportable: "this.method" } );
+                    var model = new Model();
+
+                    model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
+
+                } );
+
+                it_accepts( 'an array of method names. export() evaluates all of them and returns them as properties', function () {
+
+                    var Model = Backbone.Model.extend( {
+                        exportable: [ "method", "this.anotherMethod" ],
+                        method: function () { return "returning a value"; },
+                        anotherMethod: function () { return "returning another value"; }
+                    } );
+                    var model = new Model();
+
+                    model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
+                    model.export().should.have.a.property( 'anotherMethod' ).with.a.string( "returning another value" );
+
+                } );
 
             } );
 
-            it( 'throws an error when being assigned a method reference', function () {
+            describe( 'It causes an error on export()', function () {
 
-                // Assigning method references had been implemented and did work, but introduced unnecessary complexity
-                // and was difficult to use correctly.
-                var Model = this.ModelWithMethod.extend( {
-                    initialize: function () { this.exportable = [ this.method ]; }
+                it_throws_an_error( 'when being assigned a method reference', function () {
+
+                    // Assigning method references had been implemented and did work, but introduced unnecessary complexity
+                    // and was difficult to use correctly.
+                    var Model = this.ModelWithMethod.extend( {
+                        initialize: function () { this.exportable = [ this.method ]; }
+                    } );
+                    var model = new Model();
+
+                    var exportFunction = _.bind( model.export, model );
+                    exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+
                 } );
-                var model = new Model();
 
-                var exportFunction = _.bind( model.export, model );
-                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+                it_throws_an_error( 'when one of the methods doesn\'t exist', function () {
+
+                    var Model = this.ModelWithMethod.extend( { exportable: "missing" } );
+                    var model = new Model();
+
+                    var exportFunction = _.bind( model.export, model );
+                    exportFunction.should.throw( Error, "Can't export \"missing\". The method doesn't exist" );
+
+                } );
+
+                it_throws_an_error( 'when one of the methods is in fact not a function', function () {
+
+                    var Model = Backbone.Model.extend( {
+                        exportable: "property",
+                        property: "ordinary property, not a method"
+                    } );
+                    var model = new Model();
+
+                    var exportFunction = _.bind( model.export, model );
+                    exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier \"property\", does not point to a function" );
+
+                } );
 
             } );
 
-            it( 'throws an error when one of the methods doesn\'t exist', function () {
+        } );
 
-                var Model = this.ModelWithMethod.extend( { exportable: "missing" } );
-                var model = new Model();
+        describe( 'The export() method works recursively.', function () {
 
-                var exportFunction = _.bind( model.export, model );
-                exportFunction.should.throw( Error, "Can't export \"missing\". The method doesn't exist" );
+            describe( 'Nesting scenarios:', function () {
+
+                var OuterModel, outerModel,
+                    InnerModel, innerModel,
+                    InnerCollection, innerCollection,
+                    innerModelClone, innerCollectionClone,
+                    deeplyNestedModel, deeplyNestedModel_ExpectedExport,
+                    deeplyNestedCollection, deeplyNestedCollection_expectedExport,
+                    deeplyNestedModelClone, deeplyNestedCollectionClone;
+
+                beforeEach( function() {
+
+                    OuterModel = Backbone.Model.extend( {
+                        exportable: "returnsInner",
+                        returnsInner: function () { return this._innerObject; },
+                        _innerObject: undefined,
+                        setInnerObject: function ( innerObject ) { this._innerObject = innerObject; }
+                    } );
+
+                    outerModel = new OuterModel();
+
+                    InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
+                    innerModel = new InnerModel( { foo: "bar" } );
+
+                    InnerCollection = Backbone.Collection.extend( {
+                        exportable: "method",
+                        method: function() { return "returned by method of inner collection"; }
+                    } );
+                    innerCollection = new InnerCollection();
+
+                    deeplyNestedModel                 = { levelOneProp: [ 1, { nestedHere: innerModel          }, 3 ] };
+                    deeplyNestedModel_ExpectedExport  = { levelOneProp: [ 1, { nestedHere: innerModel.export() }, 3 ] };
+
+                    deeplyNestedCollection                = { levelOneProp: [ 1, { nestedHere: innerCollection          }, 3 ] };
+                    deeplyNestedCollection_expectedExport = { levelOneProp: [ 1, { nestedHere: innerCollection.export() }, 3 ] };
+
+                    sinon.spy( innerModel, "export" );
+                    sinon.spy( innerCollection, "export" );
+
+                    innerModelClone = deepCopy( innerModel );
+                    innerCollectionClone = deepCopy( innerCollection );
+
+                    deeplyNestedModelClone = deepCopy( deeplyNestedModel );
+                    deeplyNestedCollectionClone = deepCopy( deeplyNestedCollection );
+
+                });
+
+                afterEach( function () {
+                    if ( innerModel.export.restore ) innerModel.export.restore();
+                    if ( innerCollection.export.restore ) innerCollection.export.restore();
+                    if ( innerModelClone.export.restore ) innerModelClone.export.restore();
+                    if ( innerCollectionClone.export.restore ) innerCollectionClone.export.restore();
+                });
+
+                describe( 'An exported method returns an inner model', function () {
+
+                    expectation( 'the inner model has export() called on it', function () {
+
+                        outerModel.setInnerObject( innerModel );
+                        var exported = outerModel.export();
+
+                        innerModel.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( { returnsInner: innerModel.export() } );
+
+                    } );
+
+                    expectation( 'the inner model is unaffected by changes to its exported hash', function () {
+
+                        outerModel.setInnerObject( innerModel );
+                        var exported = outerModel.export();
+
+                        // Inner model has been properly cloned
+                        exported.returnsInner.appendedAfterwards = "should not appear in inner model";
+                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the method producing the model stays untouched, immune to manipulation of the exported data', function () {
+
+                        outerModel.setInnerObject( innerModel );
+                        var exported = outerModel.export();
+
+                        // Outer model still holds a reference to the original inner model
+                        exported.returnsInner = "overwrite the exported inner model";
+                        outerModel.returnsInner().should.be.deep.equal( innerModelClone );
+
+                    } );
+
+                } );
+
+                describe( 'An exported method returns an inner model, which in turn has an exported method returning yet another model', function () {
+
+                    var middleModel, outerModelClone;
+
+                    beforeEach( function () {
+
+                        middleModel = new OuterModel();
+                        middleModel.setInnerObject( innerModel );
+                        outerModel.setInnerObject( middleModel );
+
+                        outerModelClone = deepCopy( outerModel );
+
+                    } );
+
+                    expectation( 'the innermost model has export() called on it', function () {
+
+                        var exported = outerModel.export();
+
+                        innerModel.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( {
+                            returnsInner: {
+                                returnsInner: innerModel.export()
+                            }
+                        } );
+
+                    } );
+
+                    expectation( 'the outer model is not altered by the export itself, including the models nested inside (deep equality)', function () {
+
+                        outerModel.export();
+
+                        // Inner model has been properly cloned
+                        outerModel.should.be.deep.equal( outerModelClone );
+
+                    } );
+
+                    expectation( 'the innermost model is unaffected by changes to its exported hash', function () {
+
+                        var exported = outerModel.export();
+
+                        // Inner model has been properly cloned
+                        exported.returnsInner.returnsInner.appendedAfterwards = "should not appear in inner model";
+                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the method producing the innermost model stays untouched, immune to manipulation of the exported data', function () {
+
+                        var exported = outerModel.export();
+
+                        // Middle model still holds a reference to the original inner model
+                        exported.returnsInner = "overwrite the exported inner model";
+                        middleModel.returnsInner().should.be.deep.equal( innerModelClone );
+
+                    } );
+
+                    expectation( 'the middle model is unaffected by changes to its exported hash', function () {
+
+                        var exported = outerModel.export();
+
+                        // Middle model has been properly cloned
+                        exported.returnsInner.appendedAfterwards = "should not appear in middle model";
+                        middleModel.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the method producing the middle model stays untouched, immune to manipulation of the exported data', function () {
+
+                        var middleModelClone = deepCopy( middleModel );
+                        var exported = outerModel.export();
+
+                        // Outer model still holds a reference to the original middle model
+                        exported.returnsInner = "overwrite the exported middle model";
+                        outerModel.returnsInner().should.be.deep.equal( middleModelClone );
+
+                    } );
+
+                } );
+
+                describe( 'An exported method returns an inner collection', function () {
+
+                    expectation( 'the inner collection has export() called on it', function () {
+
+                        outerModel.setInnerObject( innerCollection );
+                        var exported = outerModel.export();
+
+                        innerCollection.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( { returnsInner: innerCollection.export() } );
+
+                    } );
+
+                    expectation( 'the inner collection is unaffected by changes to the corresponding exported array', function () {
+
+                        outerModel.setInnerObject( innerCollection );
+                        var exported = outerModel.export();
+
+                        // Inner model has been properly cloned
+                        exported.returnsInner.appendedAfterwards = "should not appear in inner collection";
+                        innerCollection.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the method producing the collection stays untouched, immune to manipulation of the exported data', function () {
+
+                        outerModel.setInnerObject( innerCollection );
+                        var exported = outerModel.export();
+
+                        // Outer model still holds a reference to the original inner model
+                        exported.returnsInner = "overwrite the exported inner collection";
+                        outerModel.returnsInner().should.be.deep.equal( innerCollectionClone );
+
+                    } );
+
+                } );
+
+                describe( 'An attribute holds an inner model', function () {
+
+                    expectation( 'the inner model has export() called on it', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: innerModel } );
+                        var exported = model.export();
+
+                        innerModel.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( { containerAttribute: innerModel.export() } );
+
+                    } );
+
+                    expectation( 'the inner model is unaffected by changes to its exported hash', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: innerModel } );
+                        var exported = model.export();
+
+                        exported.containerAttribute.appendedAfterwards = "should not appear in inner model";
+                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the attribute of the outer model continues to hold a reference to the inner model, immune to manipulation of the exported data', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: innerModel } );
+                        var exported = model.export();
+
+                        exported.containerAttribute = "overwrite the exported inner collection";
+                        model.get( "containerAttribute" ).should.be.deep.equal( innerModelClone );
+
+                    } );
+
+                } );
+
+                describe( 'An attribute holds an inner collection', function () {
+
+                    expectation( 'the inner collection has export() called on it', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: innerCollection } );
+                        var exported = model.export();
+
+                        innerCollection.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( { containerAttribute: innerCollection.export() } );
+
+                    } );
+
+                    expectation( 'the inner collection is unaffected by changes to the corresponding exported array', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: innerCollection } );
+                        var exported = model.export();
+
+                        exported.containerAttribute.appendedAfterwards = "should not appear in inner collection";
+                        innerCollection.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the attribute of the outer model continues to hold a reference to the inner collection, immune to manipulation of the exported data', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: innerCollection } );
+                        var exported = model.export();
+
+                        exported.containerAttribute = "overwrite the exported inner collection";
+                        model.get( "containerAttribute" ).should.be.deep.equal( innerCollectionClone );
+
+                    } );
+
+                } );
+
+                withCloneDeep_describe( '[Lo-dash only] An exported method returns an inner model, deeply nested within other structures', function () {
+
+                    expectation( 'the inner model has export() called on it', function () {
+
+                        outerModel.setInnerObject( deeplyNestedModel );
+                        var exported = outerModel.export();
+
+                        innerModel.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( { returnsInner: deeplyNestedModel_ExpectedExport } );
+
+                    } );
+
+                    expectation( 'the inner model is unaffected by changes to its exported hash', function () {
+
+                        outerModel.setInnerObject( deeplyNestedModel );
+                        var exported = outerModel.export();
+
+                        exported.returnsInner.levelOneProp[1].nestedHere.appendedAfterwards = "should not appear in inner model";
+                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the object wrapping the inner model stays untouched, immune to manipulation of the exported data', function () {
+
+                        outerModel.setInnerObject( deeplyNestedModel );
+                        var exported = outerModel.export();
+
+                        exported.returnsInner.levelOneProp[1].nestedHere = "overwrite the exported inner model";
+                        outerModel.returnsInner().should.be.deep.equal( deeplyNestedModelClone );
+
+                    } );
+
+                } );
+
+                withCloneDeep_describe( '[Lo-dash only] An exported method returns an inner collection, deeply nested within other structures', function () {
+
+                    expectation( 'the inner collection has export() called on it', function () {
+
+                        outerModel.setInnerObject( deeplyNestedCollection );
+                        var exported = outerModel.export();
+
+                        innerCollection.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( { returnsInner: deeplyNestedCollection_expectedExport } );
+
+                    } );
+
+                    expectation( 'the inner collection is unaffected by changes to the corresponding exported array', function () {
+
+                        outerModel.setInnerObject( deeplyNestedCollection );
+                        var exported = outerModel.export();
+
+                        exported.returnsInner.levelOneProp[1].nestedHere.appendedAfterwards = "should not appear in inner model";
+                        innerCollection.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the object wrapping the inner collection stays untouched, immune to manipulation of the exported data', function () {
+
+                        outerModel.setInnerObject( deeplyNestedCollection );
+                        var exported = outerModel.export();
+
+                        exported.returnsInner.levelOneProp[1].nestedHere = "overwrite the exported inner collection";
+                        outerModel.returnsInner().should.be.deep.equal( deeplyNestedCollectionClone );
+
+                    } );
+
+                } );
+
+                withCloneDeep_describe( '[Lo-dash only] An attribute holds an inner model, deeply nested within other structures', function () {
+
+                    expectation( 'the inner model has export() called on it', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: deeplyNestedModel } );
+                        var exported = model.export();
+
+                        innerModel.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( { containerAttribute: deeplyNestedModel_ExpectedExport } );
+
+                    } );
+
+                    expectation( 'the inner model is unaffected by changes to its exported hash', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: deeplyNestedModel } );
+                        var exported = model.export();
+
+                        exported.containerAttribute.levelOneProp[1].nestedHere.appendedAfterwards = "should not appear in inner model";
+                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the object wrapping the inner model stays untouched, immune to manipulation of the exported data', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: deeplyNestedModel } );
+                        var exported = model.export();
+
+                        exported.containerAttribute.levelOneProp[1].nestedHere = "overwrite the exported inner collection";
+                        model.get( "containerAttribute" ).should.be.deep.equal( deeplyNestedModelClone );
+
+                    } );
+
+                } );
+
+                withCloneDeep_describe( '[Lo-dash only] An attribute holds an inner collection, deeply nested within other structures', function () {
+
+                    expectation( 'the inner collection has export() called on it', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: deeplyNestedCollection } );
+                        var exported = model.export();
+
+                        innerCollection.export.should.have.been.calledOnce;
+                        exported.should.be.deep.equal( { containerAttribute: deeplyNestedCollection_expectedExport } );
+
+                    } );
+
+                    expectation( 'the inner collection is unaffected by changes to the corresponding exported array', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: deeplyNestedCollection } );
+                        var exported = model.export();
+
+                        exported.containerAttribute.levelOneProp[1].nestedHere.appendedAfterwards = "should not appear in inner model";
+                        innerCollection.should.not.have.a.property( "appendedAfterwards" );
+
+                    } );
+
+                    expectation( 'the object wrapping the inner collection stays untouched, immune to manipulation of the exported data', function () {
+
+                        var model = new Backbone.Model( { containerAttribute: deeplyNestedCollection } );
+                        var exported = model.export();
+
+                        exported.containerAttribute.levelOneProp[1].nestedHere = "overwrite the exported inner collection";
+                        model.get( "containerAttribute" ).should.be.deep.equal( deeplyNestedCollectionClone );
+
+                    } );
+
+                } );
 
             } );
 
-            it( 'throws an error when one of the methods is in fact not a function', function () {
+            describe( 'Circular references during recursion', function () {
 
-                var Model = Backbone.Model.extend( {
-                    exportable: "property",
-                    property: "ordinary property, not a method"
+                var model1, model2, model3, Model;
+
+                beforeEach( function () {
+
+                    Model = Backbone.Model.extend({
+                        exportable: "next",
+                        _next: undefined,
+                        setNext: function ( next ) { this._next = next },
+                        next: function () { return this._next }
+                    });
+
+                    model1 = new Model();
+                    model2 = new Model();
+                    model3 = new Model();
+
                 } );
-                var model = new Model();
+                they( 'are caught when two objects return each other in an export, and don\'t cause an infinite loop (single hop)', function () {
+                    //  1 .next -> 2 .next -> 1
+                    model1.setNext( model2 );
+                    model2.setNext( model1 );
 
-                var exportFunction = _.bind( model.export, model );
-                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier \"property\", does not point to a function" );
-
-            } );
-
-            it( 'calls export() recursively on models which are returned by an exported method', function () {
-
-                var InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
-                var innerModel = new InnerModel();
-                sinon.spy( innerModel, "export" );
-
-                var Model = Backbone.Model.extend( {
-                    exportable: "returnsModel",
-                    returnsModel: function () { return innerModel; }
+                    model1.export();
                 } );
-                var model = new Model();
 
-                var exported = model.export();
+                they( 'are caught when the chain extends across several models, and don\'t cause an infinite loop (multiple hops)', function () {
+                    //  1 .next -> 2 .next -> 3 .next -> 1
+                    model1.setNext( model2 );
+                    model2.setNext( model3 );
+                    model3.setNext( model1 );
 
-                innerModel.export.should.have.been.calledOnce;
-                exported.should.be.deep.equal( { returnsModel: innerModel.export() } );
-
-            } );
-
-            it( 'calls export() recursively on collections which are returned by an exported method', function () {
-
-                var InnerCollection = Backbone.Collection.extend( {
-                    exportable: "method",
-                    method: function() { return "returned by method of inner collection"; }
+                    model1.export();
                 } );
-                var innerCollection = new InnerCollection();
-                sinon.spy( innerCollection, "export" );
 
-                var Model = Backbone.Model.extend( {
-                    exportable: "returnsCollection",
-                    returnsCollection: function () { return innerCollection; }
+                they( 'are caught with intermediate objects in between which are not Backbone models or collections (multiple hops, not invoking export() in part of the chain)', function () {
+                    // model 1 .next -> array -> element: generic object -> property: model 2 .next -> model 1
+                    model1.setNext( [ { property: model2 } ] );
+                    model2.setNext( model1 );
+
+                    model1.export();
                 } );
-                var model = new Model();
 
-                var exported = model.export();
-
-                innerCollection.export.should.have.been.calledOnce;
-                exported.should.be.deep.equal( { returnsCollection: innerCollection.export() } );
+                they.skip( 'return a reference to the first model when the method which is completing the loop is called', function () {
+                    // todo with intermediate models a.next b.next c.next -> a
+                    // doesn't work, just check that everything is there (duplicated) up to the max recursion depth
+                } );
 
             } );
 
@@ -199,6 +645,38 @@
                 model.set( { property: "in original state" } );
 
                 model.export().should.have.a.property( 'property' ).with.a.string( "in modified state" );
+
+            } );
+
+            it( 'acts (at least) on a shallow clone of the data, permitting to change to top-level properties of the data without affecting the model', function () {
+
+                var Model = Backbone.Model.extend( {
+                    defaults: { innerObject: { whoami: "inner object, model data" } },
+                    onExport: function ( data ) {
+                        data.innerObject = "a string replaces the inner object in exported data";
+                        return data;
+                    }
+                } );
+                var model = new Model();
+
+                model.export();
+                model.get( "innerObject" ).should.deep.equal( { whoami: "inner object, model data" } );
+
+            } );
+
+            withCloneDeep_it( '[Lo-dash only] acts on a deep clone of the data, permitting to change to nested properties of the data without affecting the model', function () {
+
+                var Model = Backbone.Model.extend( {
+                    defaults: { innerObject: { whoami: "inner object, model data" } },
+                    onExport: function ( data ) {
+                        data.innerObject.whoami = "inner object, exported data";
+                        return data;
+                    }
+                } );
+                var model = new Model();
+
+                model.export();
+                model.get( "innerObject" ).whoami.should.equal( "inner object, model data" );
 
             } );
 
