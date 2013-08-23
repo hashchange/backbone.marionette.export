@@ -8,12 +8,14 @@
         they = it,
         expectation = it;
 
-    // Detect the ability to create deep clones with the utility library (Lo-dash vs Underscore), and make test execution
-    // dependent on it for affected tests.
-    var withCloneDeep_it = ( _.cloneDeep ? it : it.skip ),
-        withCloneDeep_describe = ( _.cloneDeep ? describe : describe.skip );
+    // Detect the ability to create deep clones with the utility library (Lo-dash build with _.cloneDeep support vs
+    // Underscore), and make test execution dependent on it for affected tests.
+    var withCloneDeep_it = ( _.cloneDeep ? it : it.skip ),                      // Lo-dash build with cloneDeep support
+        withCloneDeep_they = withCloneDeep_it,
+        withCloneDeep_describe = ( _.cloneDeep ? describe : describe.skip ),
+        withoutCloneDeep_they = ( _.cloneDeep ? it.skip : it );                 // Underscore (no deep cloning support)
 
-    function deepCopy ( obj ) {
+    function cloneDeep ( obj ) {
         return jQuery.extend( true, {}, obj );
     }
 
@@ -183,11 +185,11 @@
                     sinon.spy( innerModel, "export" );
                     sinon.spy( innerCollection, "export" );
 
-                    innerModelClone = deepCopy( innerModel );
-                    innerCollectionClone = deepCopy( innerCollection );
+                    innerModelClone = cloneDeep( innerModel );
+                    innerCollectionClone = cloneDeep( innerCollection );
 
-                    deeplyNestedModelClone = deepCopy( deeplyNestedModel );
-                    deeplyNestedCollectionClone = deepCopy( deeplyNestedCollection );
+                    deeplyNestedModelClone = cloneDeep( deeplyNestedModel );
+                    deeplyNestedCollectionClone = cloneDeep( deeplyNestedCollection );
 
                 });
 
@@ -244,7 +246,7 @@
                         middleModel.setInnerObject( innerModel );
                         outerModel.setInnerObject( middleModel );
 
-                        outerModelClone = deepCopy( outerModel );
+                        outerModelClone = cloneDeep( outerModel );
 
                     } );
 
@@ -302,7 +304,7 @@
 
                     expectation( 'the method producing the middle model stays untouched, immune to manipulation of the exported data', function () {
 
-                        var middleModelClone = deepCopy( middleModel );
+                        var middleModelClone = cloneDeep( middleModel );
                         var exported = outerModel.export();
 
                         // Outer model still holds a reference to the original middle model
@@ -417,7 +419,7 @@
 
                 } );
 
-                withCloneDeep_describe( '[Lo-dash only] An exported method returns an inner model, deeply nested within other structures', function () {
+                withCloneDeep_describe( '[_.cloneDeep support] An exported method returns an inner model, deeply nested within other structures', function () {
 
                     expectation( 'the inner model has export() called on it', function () {
 
@@ -451,7 +453,7 @@
 
                 } );
 
-                withCloneDeep_describe( '[Lo-dash only] An exported method returns an inner collection, deeply nested within other structures', function () {
+                withCloneDeep_describe( '[_.cloneDeep support] An exported method returns an inner collection, deeply nested within other structures', function () {
 
                     expectation( 'the inner collection has export() called on it', function () {
 
@@ -485,7 +487,7 @@
 
                 } );
 
-                withCloneDeep_describe( '[Lo-dash only] An attribute holds an inner model, deeply nested within other structures', function () {
+                withCloneDeep_describe( '[_.cloneDeep support] An attribute holds an inner model, deeply nested within other structures', function () {
 
                     expectation( 'the inner model has export() called on it', function () {
 
@@ -519,7 +521,7 @@
 
                 } );
 
-                withCloneDeep_describe( '[Lo-dash only] An attribute holds an inner collection, deeply nested within other structures', function () {
+                withCloneDeep_describe( '[_.cloneDeep support] An attribute holds an inner collection, deeply nested within other structures', function () {
 
                     expectation( 'the inner collection has export() called on it', function () {
 
@@ -598,9 +600,56 @@
                     model1.export();
                 } );
 
-                they.skip( 'return a reference to the first model when the method which is completing the loop is called', function () {
-                    // todo with intermediate models a.next b.next c.next -> a
-                    // doesn't work, just check that everything is there (duplicated) up to the max recursion depth
+                they( 'return an exported representation of each model in the cyle until the recursion limit has been reached', function () {
+                    //  1 .next -> 2 .next -> 1
+                    model1.setNext( model2 );
+                    model2.setNext( model1 );
+
+                    var maxHops = Model.prototype.export.maxHops;
+                    // Last exported model: Underscore returns a reference to the model, Lo-dash with _.cloneDeep
+                    // returns _.cloneDeep( last model )
+                    var exportedLast = _.cloneDeep ? _.cloneDeep : function ( model ) { return model };
+
+                    var expectedHash = maxHops % 2 ? exportedLast( model1 ) : exportedLast( model2 );
+                    for ( var i = 0; i <= maxHops; i++ ) expectedHash = { next: expectedHash };
+
+                    var exported = model1.export();
+                    exported.should.be.deep.equal( expectedHash );
+                } );
+
+                withoutCloneDeep_they( '[No _.cloneDeep support] return a reference to the last model when the recursion limit has been reached', function () {
+                    //  1 .next -> 2 .next -> 1
+                    model1.setNext( model2 );
+                    model2.setNext( model1 );
+
+                    var seed = model1;
+
+                    var expectedLast = seed.next(), hops = 0;
+                    while ( hops++ < Model.prototype.export.maxHops ) expectedLast = expectedLast.next();
+
+                    var exported = seed.export();
+                    var inner = exported.next;
+                    while ( !_.isFunction( inner.next ) ) inner = inner.next;
+
+                    inner.should.be.deep.equal( expectedLast );
+                } );
+
+                withCloneDeep_they( '[_.cloneDeep support] return a _.cloneDeep representation of the last model (deep clone of properties) when the recursion limit has been reached', function () {
+                    //  1 .next -> 2 .next -> 1
+                    model1.setNext( model2 );
+                    model2.setNext( model1 );
+
+                    var seed = model1;
+
+                    var expectedLast = seed.next(), hops = 0;
+                    while ( hops++ < Model.prototype.export.maxHops ) expectedLast = expectedLast.next();
+                    expectedLast = _.cloneDeep( expectedLast );
+
+                    var exported = seed.export();
+                    var inner = exported.next;
+                    while ( inner.next ) inner = inner.next;
+
+                    inner.should.be.deep.equal( expectedLast );
                 } );
 
             } );
@@ -664,7 +713,7 @@
 
             } );
 
-            withCloneDeep_it( '[Lo-dash only] acts on a deep clone of the data, permitting to change to nested properties of the data without affecting the model', function () {
+            withCloneDeep_it( '[_.cloneDeep support] acts on a deep clone of the data, permitting to change to nested properties of the data without affecting the model', function () {
 
                 var Model = Backbone.Model.extend( {
                     defaults: { innerObject: { whoami: "inner object, model data" } },
