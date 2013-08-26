@@ -6,6 +6,8 @@ Backbone.Marionette.Export is a plugin for [Backbone][1], and specifically targe
 
 Include this script after Backbone and Marionette (if you use Marionette) are loaded.
 
+If you need to handle deeply nested structures recursively, swap out Underscore for a compatible Lo-dash build with _.cloneDeep support. [See below](#lodash).
+
 ## Use case
 
 Out of the box, templates handled by Marionette views have access to all properties of a model, and to the array of models represented by a collection. But templates can't use the output of methods. 
@@ -33,7 +35,7 @@ Here is how it works, in its simplest form:
 `...`
 
     var Model = Backbone.Model.extend ({
-        exportable: "foo",                       // <-- this is the one line you have to add           
+        exportable: "foo",                 // <-- this is the one line you have to add           
         foo: function () { 
             return "some calculated result of calling foo"; 
         }
@@ -104,6 +106,8 @@ Besides being an array, `items` is an object like any other. Arbitrary propertie
 
 ### Recursion
 
+#### Baseline support
+
 Now, suppose a collection is passed to a template. What if it is made up of models which, in turn, have methods marked for export to the template?
 
     <script id="item-view-template" type="text/x-handlebars-template">
@@ -131,9 +135,38 @@ Now, suppose a collection is passed to a template. What if it is made up of mode
 
 The message here is that the plugin handles recursion for you, no matter of what kind. You can have a collection method return another, nested collection, which in turn holds models with methods marked for export. It all gets exported, just as you would expect, without any additional measures on your part.
 
+#### Enhanced recursion support with Lo-dash and _.cloneDeep    <a id="lodash"></a>
+
+In the default Backbone setup, recursion works fine as long as Backbone objects are nested directly within one another. If the chain is broken by other, non-Backbone objects in between, recursion stops. Consider these examples:
+
+- A hypothetical `model.getInnerModel.getInnerCollection.getYetAnotherModel` will behave as expected. 
+- By contrast, `model.getObjectLiteral.someProperty.innerBackboneModelHere` won't trigger a call to `export` on the inner model.
+
+This limitation is imposed by the underlying utility library, [Underscore][5]. Underscore [doesn't do deep cloning][6]. Handling deeply nested structures with Underscore can be full of surprises, mostly [unpleasant ones][7].
+
+The good news is that deep cloning, and support for deep recursion, is easy to add. Just swap out Underscore for a fully compatible build of [Lo-dash][8].
+
+On the Lo-dash site, there are a number of builds to choose from, including one designed to replace Underscore with 100% compatibility, but it lacks support for deep cloning. You can [add it yourself][9], though, with a few commands in a terminal.
+
+- Make sure you have [Node.js][10] and npm working.
+- Install Lo-dash globally with `npm install -g lodash`.
+- Change into the directory where you want to put your Underscore replacement.
+- Create the library with `lodash underscore plus=clone,cloneDeep`.
+- Replace the Underscore script tag on your pages with one loading the new library.
+
+With the Lo-dash build in place, deeply nested structures are no longer a problem. In the second example above, `model.getObjectLiteral.someProperty.innerBackboneModelHere` indeed triggers a call to `export` on the inner model, as one would expect.
+
+#### Maximum recursion depth
+
+Recursion can generate huge data structures in some cases, so it makes sense to impose a limit. By default, there won't be more than four recursive calls to `export` for a given top-level object. That should be more than enough for almost any template requirement.
+
+You can change the limit globally in your project by setting `Backbone.Model.prototype.export.maxHops` and `Backbone.Collection.prototype.export.maxHops` to the desired recursion depth.
+
+Circular dependencies between your models and collections are contained by the recursion limit, too.
+
 ### Complex data wrangling
 
-In case you have to change the model state, or collection state, before it is handed over to a template, you can do whatever you need to do with `onBeforeExport`. Implement it, and it will be called before the data export kicks in. 
+In case you have to change the model state, or collection state, before the model is handed over to a template, you can do whatever you need to do with `onBeforeExport`. Implement it, and it will be called before the data export kicks in. 
 
 Likewise, implement `onAfterExport` for any clean-up operations. When it is called, the data for templates is already finalized.
 
@@ -147,9 +180,7 @@ Collections, by contrast, don't have attributes, and they don't provide a native
 
 ### For which Marionette view types does it work?
 
-TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-- ItemView
+All of them.
 
 ### But I don't use Marionette!
 
@@ -166,7 +197,7 @@ properties to the templates automatically.
 
 ## Tests
 
-Use [Bower][5] for bootstrapping the test environment. With Bower in place, open a command prompt _in the `tests` directory_ and run `bower install`. If you want to test against specific versions of Backbone or Marionette, edit `bower.json` first.
+Use [Bower][11] for bootstrapping the test environment. With Bower in place, open a command prompt _in the `tests` directory_ and run `bower install`. If you want to test against specific versions of Backbone or Marionette, edit `bower.json` first.
 
 The test suite is run from `tests/index.html`.
 
@@ -178,8 +209,10 @@ MIT.
 [2]: https://github.com/marionettejs/backbone.marionette#readme "Marionette: a composite application library for Backbone.js"
 [3]: http://stackoverflow.com/a/10653468/508355 "Stack Overflow: How to access a calculated field of a backbone model from handlebars template?"
 [4]: https://github.com/marionettejs/backbone.marionette/blob/master/docs/marionette.itemview.md#rendering-a-collection-in-an-itemview "Rendering A Collection In An ItemView"
-[5]: http://bower.io/ "Bower: a package manager for the web"
-
-
-[x7]: http://jquery.com/ "jQuery"
-[x8]: http://underscorejs.org/ "Underscore"
+[5]: http://underscorejs.org/ "Underscore"
+[6]: https://github.com/jashkenas/underscore/pull/595 "Underscore Pull Request #595: Deep copying with _.clone(obj, deep)"
+[7]: http://coding.smashingmagazine.com/2013/08/09/backbone-js-tips-patterns/ "Backbone.js Tips And Patterns: Perform Deep Copies Of Objects"
+[8]: http://lodash.com/ "Lo-Dash"
+[9]: https://github.com/bestiejs/lodash/issues/206 "lodash Issue #206: Underscore compatibility"
+[10]: http://nodejs.org/ "Node.js"
+[11]: http://bower.io/ "Bower: a package manager for the web"
