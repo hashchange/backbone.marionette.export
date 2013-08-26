@@ -21,10 +21,10 @@
                 var Model = Backbone.Model.extend( {} );
                 var model = new Model();
                 var itemView = new this.ItemView( { model: model } );
-                sinon.spy( model, "onExport" );
+                sinon.spy( model, "export" );
 
                 itemView.render();
-                model.onExport.should.have.been.calledOnce;
+                model.export.should.have.been.calledOnce;
 
             } );
 
@@ -53,10 +53,10 @@
                 var Collection = Backbone.Collection.extend( {} );
                 var collection = new Collection();
                 var itemView = new this.ItemView( { collection: collection } );
-                sinon.spy( collection, "onExport" );
+                sinon.spy( collection, "export" );
 
                 itemView.render();
-                collection.onExport.should.have.been.calledOnce;
+                collection.export.should.have.been.calledOnce;
 
             } );
 

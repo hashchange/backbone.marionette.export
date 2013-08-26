@@ -35,7 +35,7 @@ Here is how it works, in its simplest form:
 `...`
 
     var Model = Backbone.Model.extend ({
-        exportable: "foo",                 // <-- this is the one line you have to add           
+        exportable: "foo",                 // <-- this is the one line you have to add
         foo: function () { 
             return "some calculated result of calling foo"; 
         }
@@ -123,7 +123,7 @@ Now, suppose a collection is passed to a template. What if it is made up of mode
     });
     
     var Collection = Backbone.Collection.extend ({
-        exportable: [ "first", "last" ]              // <-- you can use it for built-in methods, too  
+        exportable: [ "first", "last" ]              // <-- you can use it for built-in methods, too
     });
     
     var view = new Marionette.ItemView ({
