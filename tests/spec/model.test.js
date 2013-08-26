@@ -419,7 +419,7 @@
 
                 } );
 
-                withCloneDeep_describe( '[_.cloneDeep support] An exported method returns an inner model, deeply nested within other structures', function () {
+                withCloneDeep_describe( '[+ _.cloneDeep] An exported method returns an inner model, deeply nested within other structures', function () {
 
                     expectation( 'the inner model has export() called on it', function () {
 
@@ -453,7 +453,7 @@
 
                 } );
 
-                withCloneDeep_describe( '[_.cloneDeep support] An exported method returns an inner collection, deeply nested within other structures', function () {
+                withCloneDeep_describe( '[+ _.cloneDeep] An exported method returns an inner collection, deeply nested within other structures', function () {
 
                     expectation( 'the inner collection has export() called on it', function () {
 
@@ -487,7 +487,7 @@
 
                 } );
 
-                withCloneDeep_describe( '[_.cloneDeep support] An attribute holds an inner model, deeply nested within other structures', function () {
+                withCloneDeep_describe( '[+ _.cloneDeep] An attribute holds an inner model, deeply nested within other structures', function () {
 
                     expectation( 'the inner model has export() called on it', function () {
 
@@ -521,7 +521,7 @@
 
                 } );
 
-                withCloneDeep_describe( '[_.cloneDeep support] An attribute holds an inner collection, deeply nested within other structures', function () {
+                withCloneDeep_describe( '[+ _.cloneDeep] An attribute holds an inner collection, deeply nested within other structures', function () {
 
                     expectation( 'the inner collection has export() called on it', function () {
 
@@ -617,7 +617,7 @@
                     exported.should.be.deep.equal( expectedHash );
                 } );
 
-                withoutCloneDeep_they( '[No _.cloneDeep support] return a reference to the last model when the recursion limit has been reached', function () {
+                withoutCloneDeep_they( '[- _.cloneDeep] return a reference to the last model when the recursion limit has been reached', function () {
                     //  1 .next -> 2 .next -> 1
                     model1.setNext( model2 );
                     model2.setNext( model1 );
@@ -634,7 +634,7 @@
                     inner.should.be.deep.equal( expectedLast );
                 } );
 
-                withCloneDeep_they( '[_.cloneDeep support] return a _.cloneDeep representation of the last model (deep clone of properties) when the recursion limit has been reached', function () {
+                withCloneDeep_they( '[+ _.cloneDeep] return a _.cloneDeep representation of the last model (deep clone of properties) when the recursion limit has been reached', function () {
                     //  1 .next -> 2 .next -> 1
                     model1.setNext( model2 );
                     model2.setNext( model1 );
@@ -713,7 +713,7 @@
 
             } );
 
-            withCloneDeep_it( '[_.cloneDeep support] acts on a deep clone of the data, permitting to change to nested properties of the data without affecting the model', function () {
+            withCloneDeep_it( '[+ _.cloneDeep] acts on a deep clone of the data, permitting to change to nested properties of the data without affecting the model', function () {
 
                 var Model = Backbone.Model.extend( {
                     defaults: { innerObject: { whoami: "inner object, model data" } },

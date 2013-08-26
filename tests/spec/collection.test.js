@@ -3,6 +3,14 @@
 
 (function () {
 
+    var it_accepts = it,
+        it_throws_an_error = it,
+        it_acts_recursively = it;
+
+    // Detect the ability to create deep clones with the utility library (Lo-dash build with _.cloneDeep support vs
+    // Underscore), and make test execution dependent on it for affected tests.
+    var withCloneDeep_it_acts_recursively = ( _.cloneDeep ? it : it.skip );     // Lo-dash build with cloneDeep support
+
     describe( 'A Backbone collection is enhanced with the export functionality.', function () {
 
         beforeEach( function () {
@@ -87,179 +95,282 @@
 
         } );
 
-        describe( 'The "exportable" property stores the methods which are called on export. It', function () {
+        describe( 'The "exportable" property stores the methods which are called on export.', function () {
 
-            it( 'accepts a string with the name of the method. export() evaluates the method and returns it as a property', function () {
+            describe( 'It accepts', function () {
 
-                var Collection = this.CollectionWithMethods.extend( { exportable: "method" } );
-                var collection = new Collection( this.models );
+                it_accepts( 'a string with the name of the method. export() evaluates the method and returns it as a property', function () {
 
-                collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
+                    var Collection = this.CollectionWithMethods.extend( { exportable: "method" } );
+                    var collection = new Collection( this.models );
 
-            } );
+                    collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
 
-            it( 'accepts a string in the format "this.method". export() evaluates the method and returns it as a property', function () {
-
-                var Collection = this.CollectionWithMethods.extend( { exportable: "this.method" } );
-                var collection = new Collection( this.models );
-
-                collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
-
-            } );
-
-            it( 'accepts an array of method names. export() evaluates all of them and returns them as properties', function () {
-
-                var Collection = this.CollectionWithMethods.extend( {
-                    exportable: [ "method", "this.anotherMethod" ],
-                    anotherMethod: function () { return "another collection method, returning a value"; }
                 } );
-                var collection = new Collection( this.models );
 
-                collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
-                collection.export().should.have.a.property( 'anotherMethod' ).with.a.string( "another collection method, returning a value" );
+                it_accepts( 'a string in the format "this.method". export() evaluates the method and returns it as a property', function () {
+
+                    var Collection = this.CollectionWithMethods.extend( { exportable: "this.method" } );
+                    var collection = new Collection( this.models );
+
+                    collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
+
+                } );
+
+                it_accepts( 'an array of method names. export() evaluates all of them and returns them as properties', function () {
+
+                    var Collection = this.CollectionWithMethods.extend( {
+                        exportable: [ "method", "this.anotherMethod" ],
+                        anotherMethod: function () { return "another collection method, returning a value"; }
+                    } );
+                    var collection = new Collection( this.models );
+
+                    collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
+                    collection.export().should.have.a.property( 'anotherMethod' ).with.a.string( "another collection method, returning a value" );
+
+                } );
 
             } );
 
-            it( 'throws an error when being assigned a method reference', function () {
+            describe( 'It causes an error on export()', function () {
 
-                var Collection = this.CollectionWithMethods.extend( {
-                    initialize: function () { this.exportable = [ this.method ]; }
+                it_throws_an_error( 'when being assigned a method reference', function () {
+
+                    var Collection = this.CollectionWithMethods.extend( {
+                        initialize: function () { this.exportable = [ this.method ]; }
+                    } );
+                    var collection = new Collection( this.models );
+
+                    var exportFunction = _.bind( collection.export, collection );
+                    exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+
                 } );
-                var collection = new Collection( this.models );
 
-                var exportFunction = _.bind( collection.export, collection );
-                exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+                it_throws_an_error( 'when one of the methods doesn\'t exist', function () {
+
+
+                    var Collection = this.CollectionWithMethods.extend( { exportable: "missing" } );
+                    var collection = new Collection( this.models );
+
+                    var exportFunction = _.bind( collection.export, collection );
+
+                    exportFunction.should.throw( Error, "Can't export \"missing\". The method doesn't exist" );
+
+                } );
+
+                it_throws_an_error( 'if an exported collection method would overwrite a native array property', function () {
+
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "join",
+                        join: function () { return "foo"; }
+                    } );
+                    var collection = new Collection( this.models );
+
+                    var exportFunction = _.bind( collection.export, collection );
+
+                    exportFunction.should.throw( Error, "Can't export a property with a name which is reserved for a native array property. Offending properties: join" );
+
+                } );
 
             } );
 
-            it( 'throws an error when one of the methods doesn\'t exist', function () {
+            describe( 'It', function () {
 
+                it( 'also handles and exports ordinary properties of the collection, not just methods', function () {
 
-                var Collection = this.CollectionWithMethods.extend( { exportable: "missing" } );
-                var collection = new Collection( this.models );
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "property",
+                        property: "ordinary property value, not the result of a method call"
+                    } );
+                    var collection = new Collection();
 
-                var exportFunction = _.bind( collection.export, collection );
+                    collection.export().should.have.a.property( 'property' ).with.a.string( "ordinary property value, not the result of a method call" );
 
-                exportFunction.should.throw( Error, "Can't export \"missing\". The method doesn't exist" );
+                } );
+
+                it( 'does not change how the models in the collection are returned: as an array of export()ed model hashes', function () {
+
+                    var Collection = this.CollectionWithMethods.extend( { exportable: "method" } );
+                    var collection = new Collection( this.modelsWithExportedMethods );
+
+                    var expectedModelHashes = _.map( this.modelsWithExportedMethods, function( model ) { return model.export(); } );
+                    var exportedModelHashes = _.map( collection.export(), function( modelHash ) {return modelHash; } );
+                    exportedModelHashes.should.deep.equal( expectedModelHashes );
+
+                } );
 
             } );
 
-            it( 'also handles and exports ordinary properties of the collection, not just methods', function () {
+            describe( 'It calls export() recursively', function () {
 
-                var Collection = Backbone.Collection.extend( {
-                    exportable: "property",
-                    property: "ordinary property value, not the result of a method call"
+                var OuterCollection, InnerModel, innerModel,
+                    InnerCollection, innerCollection,
+                    deeplyNestedModel, deeplyNestedModel_ExpectedExport,
+                    deeplyNestedCollection, deeplyNestedCollection_expectedExport,
+                    getOuterCollection;
+
+                beforeEach( function () {
+
+                    OuterCollection = Backbone.Collection.extend( {
+                        returnsInner: function () { return this.propWithInnerObject; },
+                        propWithInnerObject: undefined,
+                        setInnerObject: function ( innerObject ) { this.propWithInnerObject = innerObject; }
+                    } );
+
+                    getOuterCollection = function ( opts ) {
+                        var Outer = OuterCollection.extend( opts );
+                        return new Outer();
+                    };
+
+                    InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
+                    innerModel = new InnerModel();
+
+                    InnerCollection = Backbone.Collection.extend( {
+                        exportable: "method",
+                        method: function() { return "returned by method of inner collection"; }
+                    } );
+                    innerCollection = new InnerCollection();
+
+                    deeplyNestedModel                 = { levelOneProp: [ 1, { nestedHere: innerModel          }, 3 ] };
+                    deeplyNestedModel_ExpectedExport  = { levelOneProp: [ 1, { nestedHere: innerModel.export() }, 3 ] };
+
+                    deeplyNestedCollection                = { levelOneProp: [ 1, { nestedHere: innerCollection          }, 3 ] };
+                    deeplyNestedCollection_expectedExport = { levelOneProp: [ 1, { nestedHere: innerCollection.export() }, 3 ] };
+
+                    sinon.spy( innerModel, "export" );
+                    sinon.spy( innerCollection, "export" );
+
+                });
+
+                afterEach( function () {
+                    if ( innerModel.export.restore ) innerModel.export.restore();
+                    if ( innerCollection.export.restore ) innerCollection.export.restore();
+                });
+
+
+                it_acts_recursively( 'on models which are returned by an exported collection method', function () {
+
+                    var collection = getOuterCollection( { exportable: "returnsInner" } );
+                    collection.setInnerObject( innerModel );
+
+                    var exported = collection.export();
+
+                    innerModel.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( { returnsInner: innerModel.export() } );
+
                 } );
-                var collection = new Collection();
 
-                collection.export().should.have.a.property( 'property' ).with.a.string( "ordinary property value, not the result of a method call" );
+                it_acts_recursively( 'on inner, nested collections which are returned by an exported collection method', function () {
 
-            } );
+                    var collection = getOuterCollection( { exportable: "returnsInner" } );
+                    collection.setInnerObject( innerCollection );
 
-            it( 'does not change how the models in the collection are returned: as an array of export()ed model hashes', function () {
+                    var exported = collection.export();
 
-                var Collection = this.CollectionWithMethods.extend( { exportable: "method" } );
-                var collection = new Collection( this.modelsWithExportedMethods );
+                    innerCollection.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( { returnsInner: innerCollection.export() } );
 
-                var expectedModelHashes = _.map( this.modelsWithExportedMethods, function( model ) { return model.export(); } );
-                var exportedModelHashes = _.map( collection.export(), function( modelHash ) {return modelHash; } );
-                exportedModelHashes.should.deep.equal( expectedModelHashes );
-
-            } );
-
-            it( 'throws an error if an exported collection method would overwrite a native array property', function () {
-
-                var Collection = Backbone.Collection.extend( {
-                    exportable: "join",
-                    join: function () { return "foo"; }
                 } );
-                var collection = new Collection( this.models );
 
-                var exportFunction = _.bind( collection.export, collection );
+                it_acts_recursively( 'on models which are assigned to an exported collection property', function () {
 
-                exportFunction.should.throw( Error, "Can't export a property with a name which is reserved for a native array property. Offending properties: join" );
+                    var collection = getOuterCollection( { exportable: "propWithInnerObject" } );
+                    collection.setInnerObject( innerModel );
 
-            } );
+                    var exported = collection.export();
 
-            it( 'calls export() recursively on models which are returned by an exported collection method', function () {
+                    innerModel.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( { propWithInnerObject: innerModel.export() } );
 
-                var InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
-                var innerModel = new InnerModel();
-                sinon.spy( innerModel, "export" );
-
-                var Collection = Backbone.Collection.extend( {
-                    exportable: "returnsModel",
-                    returnsModel: function () { return innerModel; }
                 } );
-                var collection = new Collection();
 
-                var exported = collection.export();
+                it_acts_recursively( 'on inner, nested collections which are assigned to an exported collection property', function () {
 
-                innerModel.export.should.have.been.calledOnce;
-                exported.should.be.deep.equal( { returnsModel: innerModel.export() } );
+                    var collection = getOuterCollection( { exportable: "propWithInnerObject" } );
+                    collection.setInnerObject( innerCollection );
 
-            } );
+                    var exported = collection.export();
 
-            it( 'calls export() recursively on inner, nested collections which are returned by an exported collection method', function () {
+                    innerCollection.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( { propWithInnerObject: innerCollection.export() } );
 
-                var InnerCollection = Backbone.Collection.extend( {
-                    exportable: "method",
-                    method: function() { return "returned by method of inner collection"; }
                 } );
-                var innerCollection = new InnerCollection();
-                sinon.spy( innerCollection, "export" );
 
-                var Collection = Backbone.Collection.extend( {
-                    exportable: "returnsCollection",
-                    returnsCollection: function () { return innerCollection; }
+                withCloneDeep_it_acts_recursively( '[+ _.cloneDeep] on inner models, deeply nested within other structures and returned by an exported method', function () {
+
+                    var collection = getOuterCollection( { exportable: "returnsInner" } );
+                    collection.setInnerObject( deeplyNestedModel );
+
+                    var exported = collection.export();
+
+                    innerModel.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( { returnsInner: deeplyNestedModel_ExpectedExport } );
+
                 } );
-                var collection = new Collection();
 
-                var exported = collection.export();
+                withCloneDeep_it_acts_recursively( '[+ _.cloneDeep] on inner collections, deeply nested within other structures and returned by an exported method', function () {
 
-                innerCollection.export.should.have.been.calledOnce;
-                exported.should.be.deep.equal( { returnsCollection: innerCollection.export() } );
+                    var collection = getOuterCollection( { exportable: "returnsInner" } );
+                    collection.setInnerObject( deeplyNestedCollection );
 
-            } );
+                    var exported = collection.export();
 
-            it( 'calls export() recursively on models which are assigned to an exported collection property', function () {
+                    innerCollection.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( { returnsInner: deeplyNestedCollection_expectedExport } );
 
-                var InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
-                var innerModel = new InnerModel();
-                sinon.spy( innerModel, "export" );
-
-                var Collection = Backbone.Collection.extend( {
-                    exportable: "propertyHoldingModel",
-                    propertyHoldingModel: innerModel
                 } );
-                var collection = new Collection();
 
-                var exported = collection.export();
+                withCloneDeep_it_acts_recursively( '[+ _.cloneDeep] on inner models, deeply nested within other structures and assigned to an exported property', function () {
 
-                innerModel.export.should.have.been.calledOnce;
-                exported.should.be.deep.equal( { propertyHoldingModel: innerModel.export() } );
+                    var collection = getOuterCollection( { exportable: "propWithInnerObject" } );
+                    collection.setInnerObject( deeplyNestedModel );
 
-            } );
+                    var exported = collection.export();
 
-            it( 'calls export() recursively on inner, nested collections which are assigned to an exported collection property', function () {
+                    innerModel.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( { propWithInnerObject: deeplyNestedModel_ExpectedExport } );
 
-                var InnerCollection = Backbone.Collection.extend( {
-                    exportable: "method",
-                    method: function() { return "returned by method of inner collection"; }
                 } );
-                var innerCollection = new InnerCollection();
-                sinon.spy( innerCollection, "export" );
 
-                var Collection = Backbone.Collection.extend( {
-                    exportable: "propertyHoldingCollection",
-                    propertyHoldingCollection: innerCollection
+                withCloneDeep_it_acts_recursively( '[+ _.cloneDeep] on inner collections, deeply nested within other structures and assigned to an exported property', function () {
+
+                    var collection = getOuterCollection( { exportable: "propWithInnerObject" } );
+                    collection.setInnerObject( deeplyNestedCollection );
+
+                    var exported = collection.export();
+
+                    innerCollection.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( { propWithInnerObject: deeplyNestedCollection_expectedExport } );
+
                 } );
-                var collection = new Collection();
 
-                var exported = collection.export();
+                it_acts_recursively( 'up to the maximum recursion depth, controlling circular dependencies', function () {
 
-                innerCollection.export.should.have.been.calledOnce;
-                exported.should.be.deep.equal( { propertyHoldingCollection: innerCollection.export() } );
+                    var Collection = Backbone.Collection.extend({
+                        exportable: "next",
+                        _next: undefined,
+                        setNext: function ( next ) { this._next = next },
+                        next: function () { return this._next }
+                    });
+
+                    var collection1 = new Collection();
+                    var collection2 = new Collection();
+
+                    sinon.spy( collection1, "export" );
+                    sinon.spy( collection2, "export" );
+
+                    collection1.setNext( collection2 );
+                    collection2.setNext( collection1 );
+
+                    collection1.export();
+
+                    // Recursion depth of export calls (hops). Equals call count  - 1 (the initial export call is not a
+                    // hop).
+                    var hops = collection1.export.callCount + collection2.export.callCount - 1;
+
+                    hops.should.equal( Collection.prototype.export.maxHops );
+
+                } );
 
             } );
 
