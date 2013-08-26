@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="test-framework.css">
 </head>
 <body>
-    <div id="test-framework-help-link"><a href="help.html" target="jsTestHelp">Test Framework Help</a></div>
+    <div id="test-framework-help-link" class="aux"><a href="help.html" target="jsTestHelp">Test Framework Help</a></div>
+    <div id="alternate-setup" class="aux"><a href="#"></a></div>
     <div id="mocha"></div>
     
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
@@ -48,6 +49,21 @@
     <script src="spec/model.test.js"></script>
     <script src="spec/collection.test.js"></script>
     <script src="spec/itemview.test.js"></script>
+
+    <script>
+        if ( location.hash == '#lodash' ) {
+            $('#alternate-setup a' )
+                .attr( 'href', '#' )
+                .text( '→ Run tests with Underscore (no _.cloneDeep support)' );
+        } else {
+            $('#alternate-setup a' )
+                .attr( 'href', '#lodash' )
+                .text( '→ Run tests with Lo-dash, including _.cloneDeep support' );
+        }
+        $( window ).on( "hashchange", function () {
+            location.reload( true );
+        });
+    </script>
 
     <script>mocha.run()</script>
 </body>
