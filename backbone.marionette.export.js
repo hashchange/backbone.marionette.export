@@ -219,7 +219,7 @@
 
     if ( Backbone.Marionette ) {
 
-        Backbone.Marionette.ItemView.prototype.serializeData = function () {
+        Backbone.Marionette.ItemView.prototype.serializeData = Backbone.Marionette.CompositeView.prototype.serializeData = function () {
             // Largely duplicating the original serializeData() method in Marionette.ItemView, but using Model.export
             // instead of Model.toJSON as a data source if Model.export is available. Ditto for Collection.export.
             //
@@ -228,10 +228,10 @@
 
             var data = {};
 
-            if (this.model) {
+            if ( this.model ) {
                 data = this.model.export && this.model.export() || this.model.toJSON();
             }
-            else if (this.collection) {
+            else if ( this.collection ) {
                 data = { items: this.collection.export && this.collection.export() || this.collection.toJSON() };
             }
 
