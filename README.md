@@ -197,7 +197,7 @@ properties to the templates automatically.
 
 ## Tests
 
-Use [Bower][11] for bootstrapping the test environment. With Bower in place, open a command prompt _in the `tests` directory_ and run `bower install`. If you want to test against specific versions of Backbone or Marionette, edit `bower.json` first.
+Use [Bower][11] for bootstrapping the test environment. With Bower in place, open a command prompt in the root directory of this repo and run `bower install`. If you want to test against specific versions of Backbone or Marionette, edit `bower.json` first.
 
 The test suite is run from `tests/index.html`.
 

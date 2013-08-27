@@ -1,0 +1,23 @@
+{
+  "name": "Backbone.Marionette.Export",
+  "version": "1.0.0",
+  "main": "backbone.marionette.export.js",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "backbone": "*"
+  },
+  "devDependencies": {
+    "jquery": "*",
+    "underscore": "*",
+    "marionette": "*",
+    "mocha": "*",
+    "chai": "*",
+    "sinon-chai": "*",
+    "sinon": "http://sinonjs.org/releases/sinon.js"
+  }
+}
