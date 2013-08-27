@@ -1,5 +1,5 @@
 {
-  "name": "Backbone.Marionette.Export",
+  "name": "backbone.marionette.export",
   "version": "1.0.0",
   "main": "backbone.marionette.export.js",
   "ignore": [

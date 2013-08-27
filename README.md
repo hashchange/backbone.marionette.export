@@ -6,7 +6,7 @@ Backbone.Marionette.Export is a plugin for [Backbone][1], and specifically targe
 
 Include this script after Backbone and Marionette (if you use Marionette) are loaded.
 
-If you need to handle deeply nested structures recursively, swap out Underscore for a compatible Lo-dash build with _.cloneDeep support. [See below](#lodash).
+If you need to handle deeply nested structures recursively, swap out Underscore for a compatible Lo-dash build with _.cloneDeep support. [See below](#enhanced-recursion-support-with-lo-dash-and-_clonedeep).
 
 ## Use case
 
@@ -135,7 +135,7 @@ Now, suppose a collection is passed to a template. What if it is made up of mode
 
 The message here is that the plugin handles recursion for you, no matter of what kind. You can have a collection method return another, nested collection, which in turn holds models with methods marked for export. It all gets exported, just as you would expect, without any additional measures on your part.
 
-#### Enhanced recursion support with Lo-dash and _.cloneDeep    <a id="lodash"></a>
+#### Enhanced recursion support with Lo-dash and _.cloneDeep
 
 In the default Backbone setup, recursion works fine as long as Backbone objects are nested directly within one another. If the chain is broken by other, non-Backbone objects in between, recursion stops. Consider these examples:
 
