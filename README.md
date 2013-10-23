@@ -149,7 +149,7 @@ The good news is that deep cloning, and support for deep recursion, is easy to a
 On the Lo-dash site, there are a number of builds to choose from, including one designed to replace Underscore with 100% compatibility, but it lacks support for deep cloning. You can [add it yourself][9], though, with a few commands in a terminal.
 
 - Make sure you have [Node.js][10] and npm working.
-- Install Lo-dash globally with `npm install -g lodash`.
+- Install Lo-dash globally with `npm install -g lodash`, and the CLI with `lodash-cli`.
 - Change into the directory where you want to put your Underscore replacement.
 - Create the library with `lodash underscore plus=clone,cloneDeep`.
 - Replace the Underscore script tag on your pages with one loading the new library.
