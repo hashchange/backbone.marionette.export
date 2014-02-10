@@ -4,9 +4,11 @@
 
     describe( 'Marionette.ItemView automatically provides the output of export() to its template.', function () {
 
+        var ItemView;
+
         beforeEach( function () {
 
-            this.ItemView = Marionette.ItemView.extend( {
+            ItemView = Marionette.ItemView.extend( {
                 template: function ( injectedData ) {
                     return _.template( 'some template HTML', injectedData );
                 }
@@ -20,7 +22,7 @@
 
                 var Model = Backbone.Model.extend( {} );
                 var model = new Model();
-                var itemView = new this.ItemView( { model: model } );
+                var itemView = new ItemView( { model: model } );
                 sinon.spy( model, "export" );
 
                 itemView.render();
@@ -35,7 +37,7 @@
                     method: function () { return "a method return value"; }
                 } );
                 var model = new Model();
-                var itemView = new this.ItemView( { model: model } );
+                var itemView = new ItemView( { model: model } );
                 sinon.spy( itemView, "template" );
 
                 var exportedModel = model.export();
@@ -52,7 +54,7 @@
 
                 var Collection = Backbone.Collection.extend( {} );
                 var collection = new Collection();
-                var itemView = new this.ItemView( { collection: collection } );
+                var itemView = new ItemView( { collection: collection } );
                 sinon.spy( collection, "export" );
 
                 itemView.render();
@@ -73,7 +75,7 @@
                 } );
                 var collection = new Collection( [ new Model(), new Model(), new Model() ] );
 
-                var itemView = new this.ItemView( { collection: collection } );
+                var itemView = new ItemView( { collection: collection } );
                 sinon.spy( itemView, "template" );
 
                 itemView.render();
@@ -101,7 +103,7 @@
                 } );
                 var collection = new Collection( [ new Model(), new Model(), new Model() ] );
 
-                var itemView = new this.ItemView( { collection: collection } );
+                var itemView = new ItemView( { collection: collection } );
                 sinon.spy( itemView, "template" );
 
                 itemView.render();

@@ -21,9 +21,11 @@
 
     describe( 'A Backbone model is enhanced with the export functionality.', function () {
 
+        var ModelWithMethod;
+
         beforeEach( function () {
 
-            this.ModelWithMethod = Backbone.Model.extend( {
+            ModelWithMethod = Backbone.Model.extend( {
                 method: function () { return "returning a value"; }
             } );
 
@@ -43,7 +45,7 @@
 
             it( 'does not call any method', function () {
 
-                var model = new this.ModelWithMethod();
+                var model = new ModelWithMethod();
                 sinon.spy( model, "method" );
 
                 model.export();
@@ -53,7 +55,7 @@
 
             it( 'does not alter the properties hash, even if custom methods have been added to the model', function () {
 
-                var model = new this.ModelWithMethod();
+                var model = new ModelWithMethod();
 
                 model.set( { property: "a value", anotherProperty: "another value" } );
                 var propHash = model.toJSON();
@@ -69,7 +71,7 @@
 
                 it_accepts( 'a string with the name of the method. export() evaluates the method and returns it as a property', function () {
 
-                    var Model = this.ModelWithMethod.extend( { exportable: "method" } );
+                    var Model = ModelWithMethod.extend( { exportable: "method" } );
                     var model = new Model();
 
                     model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
@@ -78,7 +80,7 @@
 
                 it_accepts( 'a string in the format "this.method". export() evaluates the method and returns it as a property', function () {
 
-                    var Model = this.ModelWithMethod.extend( { exportable: "this.method" } );
+                    var Model = ModelWithMethod.extend( { exportable: "this.method" } );
                     var model = new Model();
 
                     model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
@@ -107,7 +109,7 @@
 
                     // Assigning method references had been implemented and did work, but introduced unnecessary complexity
                     // and was difficult to use correctly.
-                    var Model = this.ModelWithMethod.extend( {
+                    var Model = ModelWithMethod.extend( {
                         initialize: function () { this.exportable = [ this.method ]; }
                     } );
                     var model = new Model();
@@ -119,7 +121,7 @@
 
                 it_throws_an_error( 'when one of the methods doesn\'t exist', function () {
 
-                    var Model = this.ModelWithMethod.extend( { exportable: "missing" } );
+                    var Model = ModelWithMethod.extend( { exportable: "missing" } );
                     var model = new Model();
 
                     var exportFunction = _.bind( model.export, model );
@@ -167,7 +169,7 @@
 
                     outerModel = new OuterModel();
 
-                    InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
+                    InnerModel = ModelWithMethod.extend( { exportable: "method" } );
                     innerModel = new InnerModel( { foo: "bar" } );
 
                     InnerCollection = Backbone.Collection.extend( {
@@ -618,6 +620,8 @@
                 } );
 
                 withoutCloneDeep_they( '[- _.cloneDeep] return a reference to the last model when the recursion limit has been reached', function () {
+                    // This test is ignored when Lodash is used during the test run; executed with Underscore
+
                     //  1 .next -> 2 .next -> 1
                     model1.setNext( model2 );
                     model2.setNext( model1 );
@@ -635,6 +639,8 @@
                 } );
 
                 withCloneDeep_they( '[+ _.cloneDeep] return a _.cloneDeep representation of the last model (deep clone of properties) when the recursion limit has been reached', function () {
+                    // This test is ignored when Underscore is used during the test run; executed with Lodash
+
                     //  1 .next -> 2 .next -> 1
                     model1.setNext( model2 );
                     model2.setNext( model1 );
@@ -673,7 +679,7 @@
 
             it( 'receives the properties hash last, ie after the methods marked as "exportable" have been transformed into properties of the hash', function () {
 
-                var Model = this.ModelWithMethod.extend( { exportable: "method" } );
+                var Model = ModelWithMethod.extend( { exportable: "method" } );
                 var model = new Model();
                 sinon.spy( model, "onExport" );
 

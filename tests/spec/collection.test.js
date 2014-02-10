@@ -13,9 +13,11 @@
 
     describe( 'A Backbone collection is enhanced with the export functionality.', function () {
 
+        var models, modelsWithExportedMethods, CollectionWithMethods;
+
         beforeEach( function () {
 
-             this.models = [
+            models = [
                 new Backbone.Model ( { modelProp: 1 } ),
                 new Backbone.Model ( { modelProp: 2 } ),
                 new Backbone.Model ( { modelProp: 3 } )
@@ -26,13 +28,13 @@
                 method: function () { return "returning a value"; }
             } );
 
-            this.modelsWithExportedMethods = [
+            modelsWithExportedMethods = [
                 new ModelWithExportedMethods( { modelProp: 1 } ),
                 new ModelWithExportedMethods( { modelProp: 2 } ),
                 new ModelWithExportedMethods( { modelProp: 3 } )
             ];
 
-            this.CollectionWithMethods = Backbone.Collection.extend( {
+            CollectionWithMethods = Backbone.Collection.extend( {
                 method: function () { return "collection method, returning a value"; }
             } );
 
@@ -42,9 +44,9 @@
 
             it( 'returns an array of exported model hashes', function () {
 
-                var collection = new Backbone.Collection( this.modelsWithExportedMethods );
+                var collection = new Backbone.Collection( modelsWithExportedMethods );
 
-                var exportedModels = _.map( this.modelsWithExportedMethods, function ( model ) { return model.export(); } );
+                var exportedModels = _.map( modelsWithExportedMethods, function ( model ) { return model.export(); } );
                 collection.export().should.deep.equal( exportedModels );
 
             } );
@@ -52,17 +54,17 @@
             it( 'calls the export() method of each model in the array', function () {
 
                 // Add a spy to the export() method of each model
-                _.each( this.models, function ( model ) { sinon.spy( model, "export" ); } );
+                _.each( models, function ( model ) { sinon.spy( model, "export" ); } );
 
-                var collection = new Backbone.Collection( this.models );
+                var collection = new Backbone.Collection( models );
                 collection.export();
 
-                _.each( this.models, function ( model ) {
+                _.each( models, function ( model ) {
                     model.export.should.have.been.calledOnce;
                 } );
 
                 // Remove the spy
-                _.each( this.models, function ( model ) { model.export.restore(); } );
+                _.each( models, function ( model ) { model.export.restore(); } );
 
             } );
 
@@ -75,7 +77,7 @@
 
             it( 'does not call any method on the collection itself', function () {
 
-                var collectionWithMethods = new this.CollectionWithMethods( this.models );
+                var collectionWithMethods = new CollectionWithMethods( models );
                 sinon.spy( collectionWithMethods, "method" );
 
                 collectionWithMethods.export();
@@ -85,8 +87,8 @@
 
             it( 'returns identical results with and without custom methods having been added to the collection', function () {
 
-                var collectionWithMethods = new this.CollectionWithMethods( this.modelsWithExportedMethods );
-                var plainCollection       = new Backbone.Collection( this.modelsWithExportedMethods );
+                var collectionWithMethods = new CollectionWithMethods( modelsWithExportedMethods );
+                var plainCollection       = new Backbone.Collection( modelsWithExportedMethods );
 
                 collectionWithMethods.export().should.deep.equal( plainCollection.export() );
 
@@ -100,8 +102,8 @@
 
                 it_accepts( 'a string with the name of the method. export() evaluates the method and returns it as a property', function () {
 
-                    var Collection = this.CollectionWithMethods.extend( { exportable: "method" } );
-                    var collection = new Collection( this.models );
+                    var Collection = CollectionWithMethods.extend( { exportable: "method" } );
+                    var collection = new Collection( models );
 
                     collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
 
@@ -109,8 +111,8 @@
 
                 it_accepts( 'a string in the format "this.method". export() evaluates the method and returns it as a property', function () {
 
-                    var Collection = this.CollectionWithMethods.extend( { exportable: "this.method" } );
-                    var collection = new Collection( this.models );
+                    var Collection = CollectionWithMethods.extend( { exportable: "this.method" } );
+                    var collection = new Collection( models );
 
                     collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
 
@@ -118,11 +120,11 @@
 
                 it_accepts( 'an array of method names. export() evaluates all of them and returns them as properties', function () {
 
-                    var Collection = this.CollectionWithMethods.extend( {
+                    var Collection = CollectionWithMethods.extend( {
                         exportable: [ "method", "this.anotherMethod" ],
                         anotherMethod: function () { return "another collection method, returning a value"; }
                     } );
-                    var collection = new Collection( this.models );
+                    var collection = new Collection( models );
 
                     collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
                     collection.export().should.have.a.property( 'anotherMethod' ).with.a.string( "another collection method, returning a value" );
@@ -135,10 +137,10 @@
 
                 it_throws_an_error( 'when being assigned a method reference', function () {
 
-                    var Collection = this.CollectionWithMethods.extend( {
+                    var Collection = CollectionWithMethods.extend( {
                         initialize: function () { this.exportable = [ this.method ]; }
                     } );
-                    var collection = new Collection( this.models );
+                    var collection = new Collection( models );
 
                     var exportFunction = _.bind( collection.export, collection );
                     exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
@@ -148,8 +150,8 @@
                 it_throws_an_error( 'when one of the methods doesn\'t exist', function () {
 
 
-                    var Collection = this.CollectionWithMethods.extend( { exportable: "missing" } );
-                    var collection = new Collection( this.models );
+                    var Collection = CollectionWithMethods.extend( { exportable: "missing" } );
+                    var collection = new Collection( models );
 
                     var exportFunction = _.bind( collection.export, collection );
 
@@ -163,7 +165,7 @@
                         exportable: "join",
                         join: function () { return "foo"; }
                     } );
-                    var collection = new Collection( this.models );
+                    var collection = new Collection( models );
 
                     var exportFunction = _.bind( collection.export, collection );
 
@@ -189,10 +191,10 @@
 
                 it( 'does not change how the models in the collection are returned: as an array of export()ed model hashes', function () {
 
-                    var Collection = this.CollectionWithMethods.extend( { exportable: "method" } );
-                    var collection = new Collection( this.modelsWithExportedMethods );
+                    var Collection = CollectionWithMethods.extend( { exportable: "method" } );
+                    var collection = new Collection( modelsWithExportedMethods );
 
-                    var expectedModelHashes = _.map( this.modelsWithExportedMethods, function( model ) { return model.export(); } );
+                    var expectedModelHashes = _.map( modelsWithExportedMethods, function( model ) { return model.export(); } );
                     var exportedModelHashes = _.map( collection.export(), function( modelHash ) {return modelHash; } );
                     exportedModelHashes.should.deep.equal( expectedModelHashes );
 
@@ -202,7 +204,7 @@
 
             describe( 'It calls export() recursively', function () {
 
-                var OuterCollection, InnerModel, innerModel, innerModel_expectedExport,
+                var OuterCollection, ModelWithMethod, InnerModel, innerModel, innerModel_expectedExport,
                     InnerCollection, innerCollection, innerCollection_expectedExport,
                     deeplyNestedModel, deeplyNestedModel_ExpectedExport,
                     deeplyNestedCollection, deeplyNestedCollection_expectedExport,
@@ -221,7 +223,11 @@
                         return new Outer();
                     };
 
-                    InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
+                    ModelWithMethod = Backbone.Model.extend( {
+                        method: function () { return "returning a value"; }
+                    } );
+
+                    InnerModel = ModelWithMethod.extend( { exportable: "method" } );
                     innerModel = new InnerModel();
                     innerModel_expectedExport = innerModel.export();
 
@@ -405,10 +411,10 @@
 
             it( 'is run by export(). It receives an array of model hashes - the data designated for export - as an argument', function () {
 
-                var collection = new Backbone.Collection( this.modelsWithExportedMethods );
+                var collection = new Backbone.Collection( modelsWithExportedMethods );
                 sinon.spy( collection, "onExport" );
 
-                var exportedModels = _.map( this.modelsWithExportedMethods, function( model ) { return model.export(); } );
+                var exportedModels = _.map( modelsWithExportedMethods, function( model ) { return model.export(); } );
 
                 collection.export();
                 collection.onExport.should.have.been.calledWithExactly( exportedModels );
@@ -417,7 +423,7 @@
 
             it( 'receives the array last. Ie, the methods of the collection which are marked as "exportable" have already been transformed into properties of the array', function () {
 
-                var Collection = this.CollectionWithMethods.extend( { exportable: "method" } );
+                var Collection = CollectionWithMethods.extend( { exportable: "method" } );
                 var collection = new Collection( [] );
                 sinon.spy( collection, "onExport" );
 
@@ -453,7 +459,7 @@
                         return data;
                     }
                 } );
-                var collection = new Collection( this.models );
+                var collection = new Collection( models );
 
                 var exportFunction = _.bind( collection.export, collection );
 
