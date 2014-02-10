@@ -4,7 +4,7 @@ Backbone.Marionette.Export is a plugin for [Backbone][1], and specifically targe
 
 ## Setup
 
-Include this script after Backbone and Marionette (if you use Marionette) are loaded.
+Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette) are loaded. If you use Bower, fetch it with: `bower install backbone.marionette.export`.
 
 If you need to handle deeply nested structures recursively, swap out Underscore for a compatible Lo-dash build with _.cloneDeep support. [See below](#enhanced-recursion-support-with-lo-dash-and-_clonedeep).
 

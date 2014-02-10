@@ -64,7 +64,6 @@
                 // Remove the spy
                 _.each( this.models, function ( model ) { model.export.restore(); } );
 
-
             } );
 
             it( 'returns an empty array if the collection does not hold any models', function () {
@@ -203,8 +202,8 @@
 
             describe( 'It calls export() recursively', function () {
 
-                var OuterCollection, InnerModel, innerModel,
-                    InnerCollection, innerCollection,
+                var OuterCollection, InnerModel, innerModel, innerModel_expectedExport,
+                    InnerCollection, innerCollection, innerCollection_expectedExport,
                     deeplyNestedModel, deeplyNestedModel_ExpectedExport,
                     deeplyNestedCollection, deeplyNestedCollection_expectedExport,
                     getOuterCollection;
@@ -224,16 +223,19 @@
 
                     InnerModel = this.ModelWithMethod.extend( { exportable: "method" } );
                     innerModel = new InnerModel();
+                    innerModel_expectedExport = innerModel.export();
 
                     InnerCollection = Backbone.Collection.extend( {
                         exportable: "method",
                         method: function() { return "returned by method of inner collection"; }
                     } );
                     innerCollection = new InnerCollection();
+                    innerCollection_expectedExport = innerCollection.export();
 
                     deeplyNestedModel                 = { levelOneProp: [ 1, { nestedHere: innerModel          }, 3 ] };
                     deeplyNestedModel_ExpectedExport  = { levelOneProp: [ 1, { nestedHere: innerModel.export() }, 3 ] };
 
+                    // NB deeplyNestedCollection: is a _model_, with a deeply nested collection inside
                     deeplyNestedCollection                = { levelOneProp: [ 1, { nestedHere: innerCollection          }, 3 ] };
                     deeplyNestedCollection_expectedExport = { levelOneProp: [ 1, { nestedHere: innerCollection.export() }, 3 ] };
 
@@ -255,9 +257,11 @@
 
                     var exported = collection.export();
 
-                    innerModel.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( { returnsInner: innerModel.export() } );
+                    var expectedArr = [];
+                    expectedArr.returnsInner = innerModel_expectedExport;
 
+                    innerModel.export.should.have.been.calledOnce;
+                    exported.should.be.deep.equal( expectedArr );
                 } );
 
                 it_acts_recursively( 'on inner, nested collections which are returned by an exported collection method', function () {
@@ -267,8 +271,11 @@
 
                     var exported = collection.export();
 
+                    var expectedArr = [];
+                    expectedArr.returnsInner = innerCollection_expectedExport;
+
                     innerCollection.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( { returnsInner: innerCollection.export() } );
+                    exported.should.be.deep.equal( expectedArr );
 
                 } );
 
@@ -279,8 +286,11 @@
 
                     var exported = collection.export();
 
+                    var expectedArr = [];
+                    expectedArr.propWithInnerObject = innerModel_expectedExport;
+
                     innerModel.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( { propWithInnerObject: innerModel.export() } );
+                    exported.should.be.deep.equal( expectedArr );
 
                 } );
 
@@ -291,8 +301,11 @@
 
                     var exported = collection.export();
 
+                    var expectedArr = [];
+                    expectedArr.propWithInnerObject = innerCollection_expectedExport;
+
                     innerCollection.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( { propWithInnerObject: innerCollection.export() } );
+                    exported.should.be.deep.equal( expectedArr );
 
                 } );
 
@@ -303,8 +316,11 @@
 
                     var exported = collection.export();
 
+                    var expectedArr = [];
+                    expectedArr.returnsInner = deeplyNestedModel_ExpectedExport;
+
                     innerModel.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( { returnsInner: deeplyNestedModel_ExpectedExport } );
+                    exported.should.be.deep.equal( expectedArr );
 
                 } );
 
@@ -315,8 +331,11 @@
 
                     var exported = collection.export();
 
+                    var expectedArr = [];
+                    expectedArr.returnsInner = deeplyNestedCollection_expectedExport;
+
                     innerCollection.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( { returnsInner: deeplyNestedCollection_expectedExport } );
+                    exported.should.be.deep.equal( expectedArr );
 
                 } );
 
@@ -327,8 +346,11 @@
 
                     var exported = collection.export();
 
+                    var expectedArr = [];
+                    expectedArr.propWithInnerObject = deeplyNestedModel_ExpectedExport;
+
                     innerModel.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( { propWithInnerObject: deeplyNestedModel_ExpectedExport } );
+                    exported.should.be.deep.equal( expectedArr );
 
                 } );
 
@@ -339,8 +361,11 @@
 
                     var exported = collection.export();
 
+                    var expectedArr = [];
+                    expectedArr.propWithInnerObject = deeplyNestedCollection_expectedExport;
+
                     innerCollection.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( { propWithInnerObject: deeplyNestedCollection_expectedExport } );
+                    exported.should.be.deep.equal( expectedArr );
 
                 } );
 
