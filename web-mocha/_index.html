@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Mocha Spec Runner</title>
-    <link rel="stylesheet" href="../bower_components/mocha/mocha.css">
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
     <link rel="stylesheet" href="test-framework.css">
 </head>
 <body>
@@ -13,13 +13,13 @@
     <div id="mocha"></div>
     
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
-    <script src="../bower_components/jquery/jquery.js"></script>
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script>
         document.write(
             '<script src="' +
             (
                 location.hash == '#lodash' ?
-                'other_components/lodash-underscore-clonedeep/lodash.custom.js' :
+                '../lib-other/lodash-underscore-clonedeep/lodash.custom.js' :
                 '../bower_components/underscore/underscore.js'
             ) +
             '"><\/script>'
@@ -29,26 +29,33 @@
     <script src="../bower_components/marionette/lib/backbone.marionette.js"></script>
 
     <!-- test framework -->
-    <script src="../bower_components/mocha/mocha.js"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
     <script>mocha.setup('bdd')</script>
 
     <!-- assertion framework --><!-- remove unnecessary components -->
-    <script src="../bower_components/chai/chai.js"></script>
-    <script src="../bower_components/sinon-chai/lib/sinon-chai.js"></script>
-    <script src="../bower_components/sinon/index.js"></script>
+    <script src="../node_modules/karma-chai-plugins/node_modules/chai/chai.js"></script>
+    <script src="../node_modules/karma-chai-plugins/node_modules/sinon-chai/lib/sinon-chai.js"></script>
+    <script src="../node_modules/karma-chai-plugins/node_modules/sinon/lib/sinon.js"></script>
+    <!--
+        Sinon component files, such as spy.js, are added automatically by `grunt interactive`.
+        Works if Sinon is installed as part of karma-chai-plugins (npm).
+        See Grunt task `sails-linker:interactive_sinon` in Gruntfile.js.
+    -->
+    <!--SINON COMPONENT SCRIPTS-->
+    <!--SINON COMPONENT SCRIPTS END-->
+
     <script>
         var expect = chai.expect,
             should = chai.should();
     </script>
 
     <!-- include source files here... -->
-    <script src="../backbone.marionette.export.js"></script>
+    <script src="../src/backbone.marionette.export.js"></script>
 
-    <!-- include spec files here... -->
-    <script src="spec/model.test.js"></script>
-    <script src="spec/collection.test.js"></script>
-    <script src="spec/itemview.test.js"></script>
-    <script src="spec/compositeview.test.js"></script>
+    <!-- (include spec files here...) -->
+    <!-- *.spec.js and *.test.js files in the spec dir are added automatically by `grunt interactive` -->
+    <!--SPEC SCRIPTS-->
+    <!--SPEC SCRIPTS END-->
 
     <script>
         if ( location.hash == '#lodash' ) {
