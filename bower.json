@@ -1,16 +1,18 @@
 {
   "name": "backbone.marionette.export",
   "version": "1.0.0",
-  "main": "backbone.marionette.export.js",
   "homepage": "https://github.com/hashchange/backbone.marionette.export",
   "authors": [
     "Michael Heim <heim@zeilenwechsel.de>"
   ],
   "description": "Exposing Backbone model and collection methods to templates.",
+  "main": "dist/backbone.marionette.export.js",
   "keywords": [
     "backbone",
     "marionette",
-    "templates"
+    "templates",
+    "models",
+    "collections"
   ],
   "license": "MIT",
   "ignore": [
@@ -18,18 +20,20 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "public",
+    "reports",
+    "demo",
+    "lib-other",
+    "web-mocha",
+    "spec",
+    "src"
   ],
-  "dependencies": {
-    "backbone": "*"
-  },
   "devDependencies": {
-    "jquery": "*",
-    "underscore": "*",
-    "marionette": "*",
-    "mocha": "*",
-    "chai": "*",
-    "sinon-chai": "*",
-    "sinon": "*"
+    "marionette": "~1.6.2"
+  },
+  "dependencies": {
+    "backbone": "~1.1.0",
+    "underscore": "~1.5.2"
   }
 }

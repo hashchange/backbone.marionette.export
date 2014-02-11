@@ -147,7 +147,7 @@
 
                 } );
 
-                it_throws_an_error( 'when one of the methods doesn\'t exist', function () {
+                it_throws_an_error( 'when one of the methods does not exist', function () {
 
 
                     var Collection = CollectionWithMethods.extend( { exportable: "missing" } );

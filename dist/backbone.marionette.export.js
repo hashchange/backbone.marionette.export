@@ -1,14 +1,7 @@
-/**
- * Backbone.Marionette.Export
- * ==========================
- *
- * Backbone.Marionette.Export is a plugin for Backbone, and specifically targeted at Marionette. It makes the methods of
- * models and collections available to templates.
- *
- * @author  Michael Heim, http://www.zeilenwechsel.de/
- * @license MIT, http://www.opensource.org/licenses/mit-license.php
- * @version 1.0.0
- */
+// Backbone.Marionette.Export, v1.0.0
+// Copyright (c)2014 Michael Heim, Zeilenwechsel.de
+// Distributed under MIT license
+// http://github.com/hashchange/backbone.marionette.export
 
 ( function( Backbone, _ ) {
     "use strict";
@@ -113,7 +106,7 @@
                 // of the box.
                 data = this.toJSON();                       // this is the same as _.clone(this.attributes);
 
-                // Call export() recursively on atrributes holding a Backbone model or collection, up to the maximum
+                // Call export() recursively on attributes holding a Backbone model or collection, up to the maximum
                 // recursion depth.
                 _.each( data, function ( attrValue, attrName, data ) {
                     if ( allowExport( attrValue ) ) data[attrName] = attrValue.export( hops + 1 );
@@ -138,7 +131,7 @@
                 if ( _.isString( method ) ) {
 
                     // Normalize the method name and get the method reference from the name.
-                    name = method.indexOf( "this." ) == 0 ? method.substr( 5 ) : method;
+                    name = method.indexOf( "this." ) === 0 ? method.substr( 5 ) : method;
                     if ( ! this[name] ) throw new Error( "Can't export \"" + name + "\". The method doesn't exist" );
                     method = this[name];
 
@@ -166,7 +159,7 @@
                     } else {
 
                         // Collection: Export an ordinary, non-function property. There isn't a native way to make a
-                        // collection property avaialble to templates, so exporting it is legit.
+                        // collection property available to templates, so exporting it is legit.
                         data[name] = this[name];
 
                     }
@@ -191,7 +184,7 @@
             }, this );
         }
 
-        // Run the onExport hander to modify/finalize the data if needed.
+        // Run the onExport handler to modify/finalize the data if needed.
         if ( this.onExport ) data = this.onExport( data );
 
         // Trigger the onAfterExport handler just before returning.

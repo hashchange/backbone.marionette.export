@@ -119,7 +119,7 @@
 
                 } );
 
-                it_throws_an_error( 'when one of the methods doesn\'t exist', function () {
+                it_throws_an_error( 'when one of the methods does not exist', function () {
 
                     var Model = ModelWithMethod.extend( { exportable: "missing" } );
                     var model = new Model();
@@ -602,7 +602,7 @@
                     model1.export();
                 } );
 
-                they( 'return an exported representation of each model in the cyle until the recursion limit has been reached', function () {
+                they( 'return an exported representation of each model in the cycle until the recursion limit has been reached', function () {
                     //  1 .next -> 2 .next -> 1
                     model1.setNext( model2 );
                     model2.setNext( model1 );
