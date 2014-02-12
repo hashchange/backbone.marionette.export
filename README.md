@@ -4,7 +4,7 @@ Backbone.Marionette.Export is a plugin for [Backbone][], and specifically target
 
 ## Setup
 
-Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette) are loaded. The stable version is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.marionette.export`.
+Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette). The stable version of Backbone.Marionette.Export is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.marionette.export`.
 
 If you need to handle deeply nested structures recursively, swap out Underscore for a compatible Lo-dash build with _.cloneDeep support. [See below](#enhanced-recursion-support-with-lo-dash-and-_clonedeep).
 
@@ -210,7 +210,7 @@ Your test and build environment is ready now. If you want to test against specif
 
 ### Running tests, creating a new build
 
-The test tool chain: [Grunt][] (task runner), [Karma][] (test runner), [Mocha][] (test framework), [Chai][] (assertion library), [Sinon][] (mocking framework). The good news: you don't need to worry much about any of this.
+The test tool chain: [Grunt][] (task runner), [Karma][] (test runner), [Mocha][] (test framework), [Chai][] (assertion library), [Sinon][] (mocking framework). The good news: you don't need to worry about any of this.
 
 A handful of commands manage everything for you:
 
@@ -222,7 +222,7 @@ A handful of commands manage everything for you:
 
 Finally, if need be, you can set up a quick demo page to play with the code. First, edit the files in the `demo` directory. Then display `demo/index.html`, live-reloading your changes to the code or the page, with `grunt demo`. Libraries needed for the demo/playground should go into the Bower dev dependencies, in the project-wide `bower.json`, or else be managed by the dedicated `bower.json` in the demo directory.
 
-_The `grunt interactive` and `grunt demo` commands spin up a web server, opening up the whole project to access via http. By default, that access is restricted to localhost. You can relax the restriction it in `Gruntfile.js`, but be aware of the security implications._
+_The `grunt interactive` and `grunt demo` commands spin up a web server, opening up the **whole project** to access via http. By default, that access is restricted to localhost. You can relax the restriction in `Gruntfile.js`, but be aware of the security implications._
 
 ### Changing the tool chain configuration
 
