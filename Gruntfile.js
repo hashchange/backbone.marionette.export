@@ -54,7 +54,11 @@ module.exports = function(grunt) {
 
     uglify: {
       options: {
-        banner: "<%= meta.banner %>"
+        banner: "<%= meta.banner %>",
+        mangle: {
+          except: ['jQuery', 'Backbone', '_']
+        },
+        sourceMap: true
       },
       amd: {
         src : 'dist/amd/backbone.marionette.export.js',
@@ -62,12 +66,7 @@ module.exports = function(grunt) {
       },
       core: {
         src: 'dist/backbone.marionette.export.js',
-        dest: 'dist/backbone.marionette.export.min.js',
-        options: {
-          sourceMap: 'dist/backbone.marionette.export.map',
-          sourceMappingURL: 'backbone.marionette.export.map',
-          sourceMapPrefix: 1
-        }
+        dest: 'dist/backbone.marionette.export.min.js'
       }
     },
 
