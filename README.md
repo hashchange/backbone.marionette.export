@@ -2,6 +2,8 @@
 
 Backbone.Marionette.Export is a plugin for [Backbone][], and specifically targeted at [Marionette][]. It makes the methods of models and collections available to templates.
 
+The name of the plugin has turned out to be a bit of a misnomer, though. Backbone.Marionette.Export does not depend on Marionette and [works great without it][use-with-plain-backbone]. In fact, Backbone.Marionette.Export is [just as useful][use-case] in projects based on plain Backbone.
+
 ## Setup
 
 Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette). The stable version of Backbone.Marionette.Export is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.marionette.export`.
@@ -262,3 +264,6 @@ Copyright (c) 2014 Michael Heim.
 [3]: https://github.com/jashkenas/underscore/pull/595 "Underscore Pull Request #595: Deep copying with _.clone(obj, deep)"
 [4]: http://coding.smashingmagazine.com/2013/08/09/backbone-js-tips-patterns/ "Backbone.js Tips And Patterns: Perform Deep Copies Of Objects"
 [5]: https://github.com/bestiejs/lodash/issues/206 "lodash Issue #206: Underscore compatibility"
+
+[use-case]: #use-case "Backbone.Marionette.Export: Use case"
+[use-with-plain-backbone]: #but-i-dont-use-marionette "Using Backbone.Marionette.Export with plain Backbone"
