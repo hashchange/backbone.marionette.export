@@ -62,11 +62,11 @@ require( [
         collection = new Collection( [ m1, m2, m3 ] ),
 
         DataView = Backbone.Marionette.CompositeView.extend( {
-            itemView: Backbone.Marionette.ItemView.extend( {
+            childView: Backbone.Marionette.ItemView.extend( {
                 tagName: "li",
                 template: "#model-template"
             } ),
-            itemViewContainer: "ul",
+            childViewContainer: "ul",
             template: "#collection-template"
         } ),
 
