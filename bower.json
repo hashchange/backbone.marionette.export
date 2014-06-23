@@ -1,6 +1,6 @@
 {
   "name": "backbone.marionette.export",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "homepage": "https://github.com/hashchange/backbone.marionette.export",
   "authors": [
     "Michael Heim <heim@zeilenwechsel.de>"
@@ -33,7 +33,7 @@
     "package.json"
   ],
   "devDependencies": {
-    "marionette": "^1.1.0 <1.9.0"
+    "marionette": "^1.1.0 <1.9.0 || ^2.0.0"
   },
   "dependencies": {
     "backbone": "^1.0.0 <1.2.0",
