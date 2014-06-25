@@ -177,18 +177,6 @@
 
             describe( 'It', function () {
 
-                it( 'also handles and exports ordinary properties of the collection, not just methods', function () {
-
-                    var Collection = Backbone.Collection.extend( {
-                        exportable: "property",
-                        property: "ordinary property value, not the result of a method call"
-                    } );
-                    var collection = new Collection();
-
-                    collection.export().should.have.a.property( 'property' ).with.a.string( "ordinary property value, not the result of a method call" );
-
-                } );
-
                 it( 'does not change how the models in the collection are returned: as an array of export()ed model hashes', function () {
 
                     var Collection = CollectionWithMethods.extend( { exportable: "method" } );
@@ -198,6 +186,97 @@
                     var exportedModelHashes = _.map( collection.export(), function( modelHash ) {return modelHash; } );
                     exportedModelHashes.should.deep.equal( expectedModelHashes );
 
+                } );
+
+               it( 'ignores methods which are declared as exportable, but return a value of undefined', function () {
+                    // This conforms to the JSON spec. Valid JSON does not represent undefined values.
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "method",
+                        method: function () {
+                            return undefined;
+                        }
+                    } );
+                    var collection = new Collection();
+
+                    collection.export().should.deep.equal( [] );
+                } );
+
+            } );
+
+            describe( 'It also handles ordinary properties of the collection, not just methods. It', function () {
+
+               it( 'exports properties with a string value', function () {
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "property",
+                        property: "string property value"
+                    } );
+                    var collection = new Collection();
+
+                    collection.export().should.have.a.property( 'property' ).with.a.string( "string property value" );
+                } );
+
+                it( 'exports properties with a boolean value of true', function () {
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "property",
+                        property: true
+                    } );
+                    var collection = new Collection();
+
+                    collection.export().should.have.a.property( 'property' );
+                    collection.export().property.should.be.a( 'boolean' );
+                    collection.export().property.should.be.true;
+                } );
+
+                it( 'exports properties with a boolean value of false', function () {
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "property",
+                        property: false
+                    } );
+                    var collection = new Collection();
+
+                    collection.export().should.have.a.property( 'property' );
+                    collection.export().property.should.be.a( 'boolean' );
+                    collection.export().property.should.be.false;
+                } );
+
+                it( 'exports properties with a null value', function () {
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "property",
+                        property: null
+                    } );
+                    var collection = new Collection();
+
+                    var expected = [];
+                    expected.property = null;
+
+                    collection.export().should.have.a.property( 'property' );
+                    collection.export().should.deep.equal( expected );
+                } );
+
+                it( 'ignores properties which exist, but have a value of undefined', function () {
+                    // This conforms to the JSON spec. Valid JSON does not represent undefined values.
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "property",
+                        property: undefined
+                    } );
+                    var collection = new Collection();
+
+                    collection.export().should.deep.equal( [] );
+                } );
+
+                it( 'attaches exported properties to the array of models (as direct properties of the array object)', function () {
+
+                    var Collection = Backbone.Collection.extend( {
+                        exportable: "property",
+                        property: "ordinary property value"
+                    } );
+                    var collection = new Collection( modelsWithExportedMethods );
+
+                    var expectedModelHashes = _.map( modelsWithExportedMethods, function( model ) { return model.export(); } );
+                    var expectedExport = expectedModelHashes;
+                    expectedExport.property = "ordinary property value";
+
+                    collection.export().should.deep.equal( expectedExport );
                 } );
 
             } );

@@ -127,7 +127,7 @@
 
                     // Normalize the method name and get the method reference from the name.
                     name = method.indexOf( "this." ) === 0 ? method.substr( 5 ) : method;
-                    if ( ! this[name] ) throw new Error( "Can't export \"" + name + "\". The method doesn't exist" );
+                    if ( ! ( name in this ) ) throw new Error( "Can't export \"" + name + "\". The method doesn't exist" );
                     method = this[name];
 
                 } else {
@@ -175,6 +175,8 @@
                     if ( allowExport( data[name] ) ) data[name] = data[name].export( hops + 1 );
                 }
 
+                // Discard undefined values. According to the spec, valid JSON does not represent undefined values.
+                if ( _.isUndefined( data[name] ) ) delete data[name];
 
             }, this );
         }

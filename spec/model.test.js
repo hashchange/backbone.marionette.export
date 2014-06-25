@@ -144,6 +144,24 @@
 
             } );
 
+            describe( 'It ignores', function () {
+
+                it( 'methods which are declared as exportable, but return a value of undefined', function () {
+                    // This conforms to the JSON spec. Valid JSON does not represent undefined values.
+                    var Model = Backbone.Model.extend( {
+                        exportable: "method",
+                        method: function () {
+                            return undefined;
+                        }
+                    } );
+                    var model = new Model();
+
+                    model.export().should.deep.equal( {} );
+                } );
+
+
+            } );
+
         } );
 
         describe( 'The export() method works recursively.', function () {
