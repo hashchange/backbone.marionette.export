@@ -103,20 +103,39 @@
 
             } );
 
-            describe( 'It causes an error on export()', function () {
+            describe( 'By default, in non-strict mode, it ignores', function () {
 
-                it_throws_an_error( 'when being assigned a method reference', function () {
+                it( 'when a method is declared as exportable but does not exist', function () {
 
-                    // Assigning method references had been implemented and did work, but introduced unnecessary complexity
-                    // and was difficult to use correctly.
-                    var Model = ModelWithMethod.extend( {
-                        initialize: function () { this.exportable = [ this.method ]; }
+                    var Model = ModelWithMethod.extend( { exportable: "missing" } );
+                    var model = new Model();
+
+                    model.export().should.eql( {} );
+
+                } );
+
+                it( 'exports the value when instead of a method, a model property is declared as exportable', function () {
+
+                    var Model = Backbone.Model.extend( {
+                        exportable: "property",
+                        property: "ordinary property, not a method"
                     } );
                     var model = new Model();
 
-                    var exportFunction = _.bind( model.export, model );
-                    exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+                    model.export().should.eql( { property: "ordinary property, not a method" } );
 
+                } );
+
+            } );
+
+            describe( 'In strict mode, it causes an error on export()', function () {
+
+                beforeEach( function () {
+                    Backbone.Model.prototype.export.global.strict = true;
+                } );
+
+                afterEach( function () {
+                    Backbone.Model.prototype.export.global.strict = false;
                 } );
 
                 it_throws_an_error( 'when one of the methods does not exist', function () {
@@ -144,7 +163,25 @@
 
             } );
 
-            describe( 'It ignores', function () {
+            describe( 'It always causes an error on export()', function () {
+
+                it_throws_an_error( 'when being assigned a method reference', function () {
+
+                    // Assigning method references had been implemented and did work, but introduced unnecessary complexity
+                    // and was difficult to use correctly.
+                    var Model = ModelWithMethod.extend( {
+                        initialize: function () { this.exportable = [ this.method ]; }
+                    } );
+                    var model = new Model();
+
+                    var exportFunction = _.bind( model.export, model );
+                    exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+
+                } );
+
+            } );
+
+            describe( 'It always ignores', function () {
 
                 it( 'methods which are declared as exportable, but return a value of undefined', function () {
                     // This conforms to the JSON spec. Valid JSON does not represent undefined values.
@@ -159,7 +196,19 @@
                     model.export().should.deep.equal( {} );
                 } );
 
+            } );
 
+            describe( 'The configuration object which enables strict mode or changes maxHops', function () {
+
+                describe( 'is indeed an object with maxHops and strict properties', function () {
+                    Backbone.Model.prototype.export.global.should.be.a( 'object' );
+                    Backbone.Model.prototype.export.global.should.have.a.property( 'maxHops' );
+                    Backbone.Model.prototype.export.global.should.have.a.property( 'strict' );
+                } );
+
+                it( 'is the same on the the Model and Collection prototype', function () {
+                    Backbone.Model.prototype.export.global.should.equal( Backbone.Collection.prototype.export.global );
+                } );
             } );
 
         } );
@@ -625,7 +674,7 @@
                     model1.setNext( model2 );
                     model2.setNext( model1 );
 
-                    var maxHops = Model.prototype.export.maxHops;
+                    var maxHops = Model.prototype.export.global.maxHops;
                     // Last exported model: Underscore returns a reference to the model, Lo-dash with _.cloneDeep
                     // returns _.cloneDeep( last model )
                     var exportedLast = _.cloneDeep ? _.cloneDeep : function ( model ) { return model };
@@ -647,7 +696,7 @@
                     var seed = model1;
 
                     var expectedLast = seed.next(), hops = 0;
-                    while ( hops++ < Model.prototype.export.maxHops ) expectedLast = expectedLast.next();
+                    while ( hops++ < Model.prototype.export.global.maxHops ) expectedLast = expectedLast.next();
 
                     var exported = seed.export();
                     var inner = exported.next;
@@ -666,7 +715,7 @@
                     var seed = model1;
 
                     var expectedLast = seed.next(), hops = 0;
-                    while ( hops++ < Model.prototype.export.maxHops ) expectedLast = expectedLast.next();
+                    while ( hops++ < Model.prototype.export.global.maxHops ) expectedLast = expectedLast.next();
                     expectedLast = _.cloneDeep( expectedLast );
 
                     var exported = seed.export();

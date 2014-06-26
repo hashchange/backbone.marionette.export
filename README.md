@@ -12,7 +12,7 @@ If you need to handle deeply nested structures recursively, swap out Underscore 
 
 ## Use case
 
-Out of the box, templates handled by Marionette views have access to all properties of a model, and to the array of models represented by a collection. But templates can't use the output of methods. 
+Out of the box, templates handled by Marionette views have access to all attributes of a model, and to the array of models represented by a collection. But templates can't use the output of methods.
 
 To work around that, you could override the `toJSON` method in a model or collection, but that creates [its own set of problems][1]. Specifically, anything you change in `toJSON` will also get written back to the server on save.
 
@@ -162,7 +162,7 @@ With the Lo-dash build in place, deeply nested structures are no longer a proble
 
 Recursion can generate huge data structures in some cases, so it makes sense to impose a limit. By default, there won't be more than four recursive calls to `export` for a given top-level object. That should be more than enough for almost any template requirement.
 
-You can change the limit globally in your project by setting `Backbone.Model.prototype.export.maxHops` and `Backbone.Collection.prototype.export.maxHops` to the desired recursion depth.
+You can change the limit globally in your project by setting `Backbone.Model.prototype.export.global.maxHops` or `Backbone.Collection.prototype.export.global.maxHops` to the desired recursion depth. (Changing one of them is enough. Model and Collection prototypes share the same config object.)
 
 Circular dependencies between your models and collections are contained by the recursion limit, too.
 
@@ -172,13 +172,30 @@ In case you have to change the model state, or collection state, before the mode
 
 Likewise, implement `onAfterExport` for any clean-up operations. When it is called, the data for templates is already finalized.
 
-### Can I mark properties for export?
+### Strict mode
 
-Yes. And no. 
+You can make Backbone.Marionette.Export considerably more pedantic, having it throw more exceptions, if you put it in strict mode.
 
-Model properties, if they are relevant to a template, should really be model _attributes_. Those get passed to templates out of the box. So you shouldn't ever need to say `exportable: "someProperty"`, and in fact, you'll get an error thrown at you for trying. That is on purpose, to help you catch accidental assignments.
+#### What strict mode does
 
-Collections, by contrast, don't have attributes, and they don't provide a native way to have a property show up in a template. So here, `exportable: "someProperty"` makes sense, and indeed it will work just fine.
+Strict mode is off by default. When enabled, Backbone.Marionette.Export will throw an exception
+
+- when a method or a collection property is declared as exportable, but does not exist
+- when a model property is declared as exportable
+
+#### Enabling strict mode
+
+You enable strict mode globally in your project by setting `Backbone.Model.prototype.export.global.strict` or `Backbone.Collection.prototype.export.global.strict` to true. (Changing one of them is enough. Model and Collection prototypes share the same config object.)
+
+#### When to use strict mode
+
+By default, if you try to export a non-existent method or property, it will just get ignored. Turning on strict mode may be helpful for catching typos, and perhaps even logical errors.
+
+Also, by default, you can declare model properties as exportable. But model properties, if they are relevant to a template, should really be [model _attributes_][backbone-model-attributes]. Those get passed to templates out of the box.
+
+So in the vast majority of cases, you won't have the need to say `exportable: "someProperty"`. By turning on strict mode, you'll get an error thrown at you for trying. That may help to catch accidental assignments.
+
+Collections, by contrast, don't have attributes, and they don't provide a native way to have a property show up in a template. So here, `exportable: "someProperty"` makes sense, and indeed it will work just fine - even in strict mode.
 
 ### For which Marionette view types does it work?
 
@@ -239,6 +256,27 @@ In case anything about the test and build process needs to be changed, have a lo
 
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
+## Release Notes
+
+### v2.0.0
+
+Bumping the major version is necessary because of changes to the public API, even though they are minor.
+
+- No longer throwing exceptions by default when declaring non-existent methods or properties as exportable
+- No longer throwing an exception by default when declaring model properties as exportable
+- Added strict mode
+- Moved `maxHops` into global config object
+
+### v1.0.1 - 1.0.7
+
+- Minor bug fixes
+- Added demo code, documentation changes
+- New build environment
+
+### v1.0.0
+
+- Initial public release
+
 ## License
 
 MIT.
@@ -267,3 +305,4 @@ Copyright (c) 2014 Michael Heim.
 
 [use-case]: #use-case "Backbone.Marionette.Export: Use case"
 [use-with-plain-backbone]: #but-i-dont-use-marionette "Using Backbone.Marionette.Export with plain Backbone"
+[backbone-model-attributes]: http://backbonejs.org/#Model-attributes "Backbone.Model attributes"

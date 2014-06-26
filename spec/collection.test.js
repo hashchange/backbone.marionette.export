@@ -133,7 +133,44 @@
 
             } );
 
-            describe( 'It causes an error on export()', function () {
+            describe( 'By default, in non-strict mode, it ignores', function () {
+
+                it( 'when a method or property is declared as exportable but does not exist', function () {
+
+                    var Collection = CollectionWithMethods.extend( { exportable: "missing" } );
+                    var collection = new Collection( models );
+
+                    var exportedModelHashes = _.map( models, function( model ) { return model.export(); } );
+                    collection.export().should.eql( exportedModelHashes );
+
+                } );
+
+            } );
+
+            describe( 'In strict mode, it causes an error on export()', function () {
+
+                beforeEach( function () {
+                    Backbone.Collection.prototype.export.global.strict = true;
+                } );
+
+                afterEach( function () {
+                    Backbone.Collection.prototype.export.global.strict = false;
+                } );
+
+                it_throws_an_error( 'when a method or property does not exist', function () {
+
+                    var Collection = CollectionWithMethods.extend( { exportable: "missing" } );
+                    var collection = new Collection( models );
+
+                    var exportFunction = _.bind( collection.export, collection );
+
+                    exportFunction.should.throw( Error, "Can't export \"missing\". The method doesn't exist" );
+
+                } );
+
+            } );
+
+            describe( 'It always causes an error on export()', function () {
 
                 it_throws_an_error( 'when being assigned a method reference', function () {
 
@@ -144,18 +181,6 @@
 
                     var exportFunction = _.bind( collection.export, collection );
                     exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
-
-                } );
-
-                it_throws_an_error( 'when one of the methods does not exist', function () {
-
-
-                    var Collection = CollectionWithMethods.extend( { exportable: "missing" } );
-                    var collection = new Collection( models );
-
-                    var exportFunction = _.bind( collection.export, collection );
-
-                    exportFunction.should.throw( Error, "Can't export \"missing\". The method doesn't exist" );
 
                 } );
 
@@ -478,7 +503,7 @@
                     // hop).
                     var hops = collection1.export.callCount + collection2.export.callCount - 1;
 
-                    hops.should.equal( Collection.prototype.export.maxHops );
+                    hops.should.equal( Collection.prototype.export.global.maxHops );
 
                 } );
 
