@@ -1,4 +1,4 @@
-// Backbone.Marionette.Export, v1.0.7
+// Backbone.Marionette.Export, v2.0.0
 // Copyright (c)2014 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.marionette.export
@@ -85,7 +85,7 @@
                 return (
                     obj && obj.export
                     && ( obj instanceof Backbone.Model || obj instanceof Backbone.Collection )
-                    && hops < obj.export.maxHops
+                    && hops < obj.export.global.maxHops
                 );
             }
     
@@ -142,14 +142,19 @@
     
                 _.each( exportable, function( method ) {
     
-                    var name;
+                    var name,
+    
+                    // The configuration can be read off either the Model or Collection prototype;
+                    // both reference the same object.
+                        strictMode = this.export.global.strict;
+    
                     if ( _.isUndefined( method ) ) throw new Error( "Can't export method. Undefined method reference" );
     
                     if ( _.isString( method ) ) {
     
                         // Normalize the method name and get the method reference from the name.
                         name = method.indexOf( "this." ) === 0 ? method.substr( 5 ) : method;
-                        if ( ! ( name in this ) ) throw new Error( "Can't export \"" + name + "\". The method doesn't exist" );
+                        if ( ! ( name in this ) && strictMode ) throw new Error( "Can't export \"" + name + "\". The method doesn't exist" );
                         method = this[name];
     
                     } else {
@@ -163,7 +168,7 @@
     
                     } else {
     
-                        if ( this instanceof Backbone.Model ) {
+                        if ( this instanceof Backbone.Model && strictMode ) {
     
                             // Model: Only act on a real method. Here, `method` is a reference to an ordinary property, ie
                             // one which is not a function. Throw an error because a reference of that kind is likely to be
@@ -227,7 +232,10 @@
             return data;
         };
     
-        Backbone.Model.prototype.export.maxHops = Backbone.Collection.prototype.export.maxHops = 4;
+        Backbone.Model.prototype.export.global = Backbone.Collection.prototype.export.global = {
+            maxHops: 4,
+            strict: false
+        };
     
         if ( Backbone.Marionette ) {
     
