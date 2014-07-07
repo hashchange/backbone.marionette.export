@@ -1,4 +1,4 @@
-// Backbone.Marionette.Export, v2.0.0
+// Backbone.Marionette.Export, v2.0.1
 // Copyright (c)2014 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.marionette.export
@@ -261,7 +261,6 @@
         }
     
     }( Backbone, _ ));
-    return Backbone.Marionette.Export;
 
 } ));
 

@@ -16,7 +16,6 @@
     "option strict";
 
     // @include backbone.marionette.export.js
-    return Backbone.Marionette.Export;
 
 } ));
 
