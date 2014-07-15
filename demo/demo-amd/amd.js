@@ -21,6 +21,9 @@ requirejs.config( {
         'marionette' : {
             deps : ['jquery', 'underscore', 'backbone'],
             exports : 'Marionette'
+        },
+        'backbone.marionette.export': {
+            deps: ['marionette']
         }
     }
 } );

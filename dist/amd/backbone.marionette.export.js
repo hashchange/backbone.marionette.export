@@ -1,4 +1,4 @@
-// Backbone.Marionette.Export, v2.0.1
+// Backbone.Marionette.Export, v2.1.0
 // Copyright (c)2014 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.marionette.export
@@ -8,13 +8,12 @@
 
         var underscore = require( 'underscore' );
         var backbone = require( 'backbone' );
-        var marionette = require( 'marionette' );
 
-        module.exports = factory( underscore, backbone, marionette );
+        module.exports = factory( underscore, backbone );
 
     } else if ( typeof define === 'function' && define.amd ) {
 
-        define( ['underscore', 'backbone', 'marionette'], factory );
+        define( ['underscore', 'backbone'], factory );
 
     }
 }( this, function ( _, Backbone ) {

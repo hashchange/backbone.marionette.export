@@ -272,6 +272,11 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release Notes
 
+### v2.1.0
+
+- Removed Marionette as a hard dependency in AMD/CJS build. _Important: It is now up to the client code to make sure that Marionette is loaded first._
+- Made available as an npm install
+
 ### v2.0.0
 
 Bumping the major version is necessary because of changes to the public API, even though they are minor.
