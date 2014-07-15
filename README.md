@@ -6,7 +6,7 @@ The name of the plugin has turned out to be a bit of a misnomer, though. Backbon
 
 ## Setup
 
-Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette). The stable version of Backbone.Marionette.Export is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.marionette.export`.
+Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette). The stable version of Backbone.Marionette.Export is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.marionette.export`. With npm, it is `npm install backbone.marionette.export`.
 
 If you need to handle deeply nested structures recursively, swap out Underscore for a compatible Lo-dash build with _.cloneDeep support. [See below](#enhanced-recursion-support-with-lo-dash-and-_clonedeep).
 

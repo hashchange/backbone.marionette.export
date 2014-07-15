@@ -1,7 +1,27 @@
 {
   "name": "backbone.marionette.export",
   "version": "2.0.1",
-  "dependencies": {},
+  "homepage": "https://github.com/hashchange/backbone.marionette.export",
+  "bugs": "https://github.com/hashchange/backbone.marionette.export/issues",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/hashchange/backbone.marionette.export.git"
+  },
+  "author": "Michael Heim <heim@zeilenwechsel.de> (http://www.zeilenwechsel.de/)",
+  "description": "Exposing Backbone model and collection methods to templates.",
+  "main": "dist/amd/backbone.marionette.export.js",
+  "keywords": [
+    "backbone",
+    "marionette",
+    "templates",
+    "models",
+    "collections"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "backbone": "^1.0.0 <1.2.0",
+    "underscore": "^1.5.0 <1.7.0"
+  },
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-cli": "~0.1.13",
