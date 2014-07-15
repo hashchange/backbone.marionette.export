@@ -3,13 +3,12 @@
 
         var underscore = require( 'underscore' );
         var backbone = require( 'backbone' );
-        var marionette = require( 'marionette' );
 
-        module.exports = factory( underscore, backbone, marionette );
+        module.exports = factory( underscore, backbone );
 
     } else if ( typeof define === 'function' && define.amd ) {
 
-        define( ['underscore', 'backbone', 'marionette'], factory );
+        define( ['underscore', 'backbone'], factory );
 
     }
 }( this, function ( _, Backbone ) {

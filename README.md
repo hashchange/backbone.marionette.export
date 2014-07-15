@@ -8,6 +8,20 @@ The name of the plugin has turned out to be a bit of a misnomer, though. Backbon
 
 Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette). The stable version of Backbone.Marionette.Export is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.marionette.export`. With npm, it is `npm install backbone.marionette.export`.
 
+Because Marionette is optional, it is not required as a dependency in the AMD/CJS build of Backbone.Marionette.Export. Your own code must make sure that Marionette is loaded first. With [RequireJS][], for instance, you'd use [a shim][RequireJS-shim] to express the dependency:
+
+```javascript
+requirejs.config({
+    // ...
+
+    shim: {
+        'backbone.marionette.export': {
+            deps: ['marionette']
+        }
+    }
+});
+```
+
 If you need to handle deeply nested structures recursively, swap out Underscore for a compatible Lo-dash build with _.cloneDeep support. [See below](#enhanced-recursion-support-with-lo-dash-and-_clonedeep).
 
 ## Use case
@@ -287,6 +301,8 @@ Copyright (c) 2014 Michael Heim.
 [Marionette]: https://github.com/marionettejs/backbone.marionette#readme "Marionette: a composite application library for Backbone.js"
 [Underscore]: http://underscorejs.org/ "Underscore"
 [Lo-dash]: http://lodash.com/ "Lo-Dash"
+[RequireJS]: http://requirejs.org/ "RequireJS"
+[RequireJS-shim]: http://requirejs.org/docs/api.html#config-shim "RequireJS Configuration Options: Shim"
 [Node.js]: http://nodejs.org/ "Node.js"
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"
