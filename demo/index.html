@@ -8,6 +8,11 @@
     <title>Demo and Playground</title>
 
     <!-- ATTN Foundation loaded without JS - stay clear of JS-driven widgets, or add the JS setup -->
+    <!--
+        ATTN jQuery 1.x is used here, making the demo compatible with oldIE. As a side effect,
+        Foundation 5 JS can't be used reliably (requires jQuery 2.x). Stay clear, or switch to
+        jQuery 2.x, available in node_modules.
+    -->
     <link rel="stylesheet" href="bower_demo_components/foundation/css/normalize.css">
     <link rel="stylesheet" href="bower_demo_components/foundation/css/foundation.css">
 
@@ -29,7 +34,7 @@
     </section>
     
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
-    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="bower_demo_components/jquery/dist/jquery.js"></script>
     <script src="../bower_components/underscore/underscore.js"></script>
     <script src="../bower_components/backbone/backbone.js"></script>
     <script src="../bower_components/marionette/lib/backbone.marionette.js"></script>

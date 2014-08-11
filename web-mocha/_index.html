@@ -11,7 +11,10 @@
     <div id="test-framework-help-link" class="aux"><a href="help.html" target="jsTestHelp">Test Framework Help</a></div>
     <div id="alternate-setup" class="aux"><a href="#"></a></div>
     <div id="mocha"></div>
-    
+
+    <!-- Fixing window.console for oldIE -->
+    <script>if ( !window.console ) { window.console = {}; window.console.log = window.console.assert = function () {}; }</script>
+
     <!-- libraries --><!-- edit and replace with your project libraries as needed -->
     <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script>

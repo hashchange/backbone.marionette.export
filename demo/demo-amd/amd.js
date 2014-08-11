@@ -3,7 +3,13 @@ requirejs.config( {
     baseUrl: '../../bower_components',
 
     paths: {
-        'jquery': '../node_modules/jquery/dist/jquery',
+        // Using a different jQuery here than elsewhere (1.x, instead of 2.x in node_modules).
+        // Makes the demo work in oldIE, too.
+        'jquery': '../demo/bower_demo_components/jquery/dist/jquery',
+
+        // Use this path for switching to jQuery 2.x
+        // 'jquery': '../node_modules/jquery/dist/jquery',
+
         'underscore': 'underscore/underscore',
         'backbone': 'backbone/backbone',
         'marionette': 'marionette/lib/backbone.marionette',
