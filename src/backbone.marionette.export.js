@@ -61,9 +61,9 @@
 
         function allowExport ( obj ) {
             return (
-                obj && obj.export
-                && ( obj instanceof Backbone.Model || obj instanceof Backbone.Collection )
-                && hops < obj.export.global.maxHops
+                obj && obj.export &&
+                ( obj instanceof Backbone.Model || obj instanceof Backbone.Collection ) &&
+                hops < obj.export.global.maxHops
             );
         }
 
