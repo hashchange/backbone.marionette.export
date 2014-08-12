@@ -2,8 +2,13 @@
     "use strict";
 
     /**
-     * Captures all properties of an object, all the way up the prototype chain. Returns them as an array of property
-     * names.
+     * Captures all properties of an object, including the non-enumerable ones, all the way up the prototype chain.
+     * Returns them as an array of property names.
+     *
+     * In legacy browsers which don't support Object.getOwnPropertyNames, only enumerable properties are returned.
+     * There is no alternative way to list non-enumerable properties in ES3, which these browsers are based on (see
+     * http://stackoverflow.com/a/8241423/508355). Listing the enumerable properties is usually good enough, though.
+     * Affects IE8.
      *
      * Code lifted from the MDC docs, http://goo.gl/hw2h4G
      *
@@ -12,11 +17,21 @@
      */
     function listAllProperties ( obj ) {
 
-        var objectToInspect;
-        var result = [];
+        var objectToInspect,
+            property,
+            result = [];
 
-        for ( objectToInspect = obj; objectToInspect !== null; objectToInspect = Object.getPrototypeOf( objectToInspect ) ) {
-            result = result.concat( Object.getOwnPropertyNames( objectToInspect ) );
+        if ( Object.getPrototypeOf && Object.getOwnPropertyNames ) {
+
+            // Modern browser. Return enumerable and non-enumerable properties, all up the prototype chain.
+            for ( objectToInspect = obj; objectToInspect !== null; objectToInspect = Object.getPrototypeOf( objectToInspect ) ) {
+                result = result.concat( Object.getOwnPropertyNames( objectToInspect ) );
+            }
+
+        } else {
+
+            // Legacy browser. Return enumerable properties only, all up the prototype chain.
+            for ( property in obj ) result.push( property );
         }
 
         return _.unique( result );
