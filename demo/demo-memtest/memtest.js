@@ -1,7 +1,7 @@
 ( function ( Backbone, _, $ ) {
     "use strict";
 
-    console || ( console = { log: function ( msg ) {} } );
+    if ( !( this && this.console || window.console ) ) window.console = { log: function ( msg ) {} };
 
     var $log = $( "#log" ),
         $memtest = $( "#memtest" ),
@@ -35,7 +35,8 @@
         },
 
         waitCb = function ( collection, models ) {
-            console.log( "WAIT output: collection.length=" + collection.length + ", models.length=" + models.length );
+            // NB Verify that collection, model and length props exist. Needed for for IE8.
+            if ( collection && collection.length && models && models.length ) console.log( "WAIT output: collection.length=" + collection.length + ", models.length=" + models.length );
             msg( "WAIT has ended.\n" );
         },
 
