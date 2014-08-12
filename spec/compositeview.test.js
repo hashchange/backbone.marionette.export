@@ -33,8 +33,8 @@
 
         afterEach( function () {
 
-            if ( model.export.restore ) model.export.restore();
-            if ( collection.export.restore ) collection.export.restore();
+            if ( model["export"].restore ) model["export"].restore();
+            if ( collection["export"].restore ) collection["export"].restore();
 
         } );
 
@@ -45,7 +45,7 @@
                 var compositeView = new CompositeView( { model: model } );
 
                 compositeView.render();
-                expect( model.export ).to.have.been.calledOnce;
+                expect( model["export"] ).to.have.been.calledOnce;
 
             } );
 
@@ -54,7 +54,7 @@
                 var compositeView = new CompositeView( { model: model } );
                 sinon.spy( compositeView, "template" );
 
-                var exportedModel = model.export();
+                var exportedModel = model["export"]();
                 compositeView.render();
                 expect( compositeView.template ).to.have.been.calledWithExactly( exportedModel );
 
@@ -69,7 +69,7 @@
                 var compositeView = new CompositeView( { collection: collection } );
 
                 compositeView.render();
-                expect( collection.export ).to.have.been.calledOnce;
+                expect( collection["export"] ).to.have.been.calledOnce;
 
             } );
 
@@ -80,7 +80,7 @@
 
                 compositeView.render();
                 expect( compositeView.template ).to.have.been.calledWithExactly( sinon.match( function ( templateData ) {
-                    return templateData.items && _.isEqual( _.pairs( templateData.items ), _.pairs( collection.export() ) );
+                    return templateData.items && _.isEqual( _.pairs( templateData.items ), _.pairs( collection["export"]() ) );
                 } ) );
                 //
                 // NB: _.isEqual does compare arrays, but does NOT pick up any custom properties attached to the array
@@ -96,7 +96,7 @@
                 sinon.spy( compositeView, "template" );
 
                 compositeView.render();
-                expect( compositeView.template ).to.have.been.calledWithExactly( sinon.match.has( "items", collection.export() ) );
+                expect( compositeView.template ).to.have.been.calledWithExactly( sinon.match.has( "items", collection["export"]() ) );
                 //
                 // NB: sinon.match.has does compare the array, but does NOT pick up any custom properties attached to
                 // the array object. Here, we only verify that the content of the arrays, ie the items in it, are

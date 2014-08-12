@@ -26,7 +26,7 @@
                 sinon.spy( model, "export" );
 
                 itemView.render();
-                expect( model.export ).to.have.been.calledOnce;
+                expect( model["export"] ).to.have.been.calledOnce;
 
             } );
 
@@ -40,7 +40,7 @@
                 var itemView = new ItemView( { model: model } );
                 sinon.spy( itemView, "template" );
 
-                var exportedModel = model.export();
+                var exportedModel = model["export"]();
                 itemView.render();
                 expect( itemView.template ).to.have.been.calledWithExactly( exportedModel );
 
@@ -58,7 +58,7 @@
                 sinon.spy( collection, "export" );
 
                 itemView.render();
-                expect( collection.export ).to.have.been.calledOnce;
+                expect( collection["export"] ).to.have.been.calledOnce;
 
             } );
 
@@ -80,7 +80,7 @@
 
                 itemView.render();
                 expect( itemView.template ).to.have.been.calledWithExactly( sinon.match( function ( templateData ) {
-                    return templateData.items && _.isEqual( _.pairs( templateData.items ), _.pairs( collection.export() ) );
+                    return templateData.items && _.isEqual( _.pairs( templateData.items ), _.pairs( collection["export"]() ) );
                 } ) );
                 //
                 // NB: _.isEqual does compare arrays, but does NOT pick up any custom properties attached to the array
@@ -107,7 +107,7 @@
                 sinon.spy( itemView, "template" );
 
                 itemView.render();
-                expect( itemView.template ).to.have.been.calledWithExactly( sinon.match.has( "items", collection.export() ) );
+                expect( itemView.template ).to.have.been.calledWithExactly( sinon.match.has( "items", collection["export"]() ) );
                 //
                 // NB: sinon.match.has does compare the array, but does NOT pick up any custom properties attached to
                 // the array object. Here, we only verify that the content of the arrays, ie the items in it, are
