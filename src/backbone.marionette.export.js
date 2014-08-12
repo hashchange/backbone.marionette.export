@@ -217,7 +217,7 @@
 
             conflicts = _.intersection( nativeArrayProperties,  _.keys( data ) ) ;
             if ( conflicts.length ) {
-                throw new Error( "Can't export a property with a name which is reserved for a native array property. Offending properties: " + conflicts );
+                throw new Error( "Can't export a property with a name which is reserved for a native array property. Offending properties: " + conflicts.join( ", " ) );
             }
 
         }

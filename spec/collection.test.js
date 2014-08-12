@@ -567,7 +567,7 @@
 
                 var exportFunction = _.bind( collection.export, collection );
 
-                exportFunction.should.throw( Error, "Can't export a property with a name which is reserved for a native array property. Offending properties: join" );
+                exportFunction.should.throw( Error, /Can't export a property with a name which is reserved for a native array property\. Offending properties: (join, concat|concat, join)/ );
 
             } );
 
