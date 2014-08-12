@@ -45,7 +45,7 @@
                 var compositeView = new CompositeView( { model: model } );
 
                 compositeView.render();
-                model.export.should.have.been.calledOnce;
+                expect( model.export ).to.have.been.calledOnce;
 
             } );
 
@@ -56,7 +56,7 @@
 
                 var exportedModel = model.export();
                 compositeView.render();
-                compositeView.template.should.have.been.calledWithExactly( exportedModel );
+                expect( compositeView.template ).to.have.been.calledWithExactly( exportedModel );
 
             } );
 
@@ -69,7 +69,7 @@
                 var compositeView = new CompositeView( { collection: collection } );
 
                 compositeView.render();
-                collection.export.should.have.been.calledOnce;
+                expect( collection.export ).to.have.been.calledOnce;
 
             } );
 
@@ -79,7 +79,7 @@
                 sinon.spy( compositeView, "template" );
 
                 compositeView.render();
-                compositeView.template.should.have.been.calledWithExactly( sinon.match( function ( templateData ) {
+                expect( compositeView.template ).to.have.been.calledWithExactly( sinon.match( function ( templateData ) {
                     return templateData.items && _.isEqual( _.pairs( templateData.items ), _.pairs( collection.export() ) );
                 } ) );
                 //
@@ -96,7 +96,7 @@
                 sinon.spy( compositeView, "template" );
 
                 compositeView.render();
-                compositeView.template.should.have.been.calledWithExactly( sinon.match.has( "items", collection.export() ) );
+                expect( compositeView.template ).to.have.been.calledWithExactly( sinon.match.has( "items", collection.export() ) );
                 //
                 // NB: sinon.match.has does compare the array, but does NOT pick up any custom properties attached to
                 // the array object. Here, we only verify that the content of the arrays, ie the items in it, are

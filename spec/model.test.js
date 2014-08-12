@@ -39,7 +39,7 @@
 
                 model.set( { property: "a value", anotherProperty: "another value" } );
                 var propHash = model.toJSON();
-                model.export().should.deep.equal( propHash );
+                expect( model.export() ).to.deep.equal( propHash );
 
             } );
 
@@ -49,7 +49,7 @@
                 sinon.spy( model, "method" );
 
                 model.export();
-                model.method.should.not.have.been.called;
+                expect( model.method ).not.to.have.been.called;
 
             } );
 
@@ -59,7 +59,7 @@
 
                 model.set( { property: "a value", anotherProperty: "another value" } );
                 var propHash = model.toJSON();
-                model.export().should.deep.equal( propHash );
+                expect( model.export() ).to.deep.equal( propHash );
 
             } );
 
@@ -74,7 +74,7 @@
                     var Model = ModelWithMethod.extend( { exportable: "method" } );
                     var model = new Model();
 
-                    model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
+                    expect( model.export() ).to.have.a.property( 'method' ).with.a.string( "returning a value" );
 
                 } );
 
@@ -83,7 +83,7 @@
                     var Model = ModelWithMethod.extend( { exportable: "this.method" } );
                     var model = new Model();
 
-                    model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
+                    expect( model.export() ).to.have.a.property( 'method' ).with.a.string( "returning a value" );
 
                 } );
 
@@ -96,8 +96,8 @@
                     } );
                     var model = new Model();
 
-                    model.export().should.have.a.property( 'method' ).with.a.string( "returning a value" );
-                    model.export().should.have.a.property( 'anotherMethod' ).with.a.string( "returning another value" );
+                    expect( model.export() ).to.have.a.property( 'method' ).with.a.string( "returning a value" );
+                    expect( model.export() ).to.have.a.property( 'anotherMethod' ).with.a.string( "returning another value" );
 
                 } );
 
@@ -110,7 +110,7 @@
                     var Model = ModelWithMethod.extend( { exportable: "missing" } );
                     var model = new Model();
 
-                    model.export().should.eql( {} );
+                    expect( model.export() ).to.eql( {} );
 
                 } );
 
@@ -122,7 +122,7 @@
                     } );
                     var model = new Model();
 
-                    model.export().should.eql( { property: "ordinary property, not a method" } );
+                    expect( model.export() ).to.eql( { property: "ordinary property, not a method" } );
 
                 } );
 
@@ -144,7 +144,7 @@
                     var model = new Model();
 
                     var exportFunction = _.bind( model.export, model );
-                    exportFunction.should.throw( Error, "Can't export \"missing\". The method doesn't exist" );
+                    expect( exportFunction ).to.throw( Error, "Can't export \"missing\". The method doesn't exist" );
 
                 } );
 
@@ -157,7 +157,7 @@
                     var model = new Model();
 
                     var exportFunction = _.bind( model.export, model );
-                    exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier \"property\", does not point to a function" );
+                    expect( exportFunction ).to.throw( Error, "'exportable' property: Invalid method identifier \"property\", does not point to a function" );
 
                 } );
 
@@ -175,7 +175,7 @@
                     var model = new Model();
 
                     var exportFunction = _.bind( model.export, model );
-                    exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+                    expect( exportFunction ).to.throw( Error, "'exportable' property: Invalid method identifier" );
 
                 } );
 
@@ -193,7 +193,7 @@
                     } );
                     var model = new Model();
 
-                    model.export().should.deep.equal( {} );
+                    expect( model.export() ).to.deep.equal( {} );
                 } );
 
             } );
@@ -201,13 +201,13 @@
             describe( 'The configuration object which enables strict mode or changes maxHops', function () {
 
                 describe( 'is indeed an object with maxHops and strict properties', function () {
-                    Backbone.Model.prototype.export.global.should.be.a( 'object' );
-                    Backbone.Model.prototype.export.global.should.have.a.property( 'maxHops' );
-                    Backbone.Model.prototype.export.global.should.have.a.property( 'strict' );
+                    expect( Backbone.Model.prototype.export.global ).to.be.a( 'object' );
+                    expect( Backbone.Model.prototype.export.global ).to.have.a.property( 'maxHops' );
+                    expect( Backbone.Model.prototype.export.global ).to.have.a.property( 'strict' );
                 } );
 
                 it( 'is the same on the the Model and Collection prototype', function () {
-                    Backbone.Model.prototype.export.global.should.equal( Backbone.Collection.prototype.export.global );
+                    expect( Backbone.Model.prototype.export.global ).to.equal( Backbone.Collection.prototype.export.global );
                 } );
             } );
 
@@ -276,8 +276,8 @@
                         outerModel.setInnerObject( innerModel );
                         var exported = outerModel.export();
 
-                        innerModel.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( { returnsInner: innerModel.export() } );
+                        expect( innerModel.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( { returnsInner: innerModel.export() } );
 
                     } );
 
@@ -288,7 +288,7 @@
 
                         // Inner model has been properly cloned
                         exported.returnsInner.appendedAfterwards = "should not appear in inner model";
-                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerModel ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -299,7 +299,7 @@
 
                         // Outer model still holds a reference to the original inner model
                         exported.returnsInner = "overwrite the exported inner model";
-                        outerModel.returnsInner().should.be.deep.equal( innerModelClone );
+                        expect( outerModel.returnsInner() ).to.deep.equal( innerModelClone );
 
                     } );
 
@@ -323,8 +323,8 @@
 
                         var exported = outerModel.export();
 
-                        innerModel.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( {
+                        expect( innerModel.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( {
                             returnsInner: {
                                 returnsInner: innerModel.export()
                             }
@@ -337,7 +337,7 @@
                         outerModel.export();
 
                         // Inner model has been properly cloned
-                        outerModel.should.be.deep.equal( outerModelClone );
+                        expect( outerModel ).to.deep.equal( outerModelClone );
 
                     } );
 
@@ -347,7 +347,7 @@
 
                         // Inner model has been properly cloned
                         exported.returnsInner.returnsInner.appendedAfterwards = "should not appear in inner model";
-                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerModel ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -357,7 +357,7 @@
 
                         // Middle model still holds a reference to the original inner model
                         exported.returnsInner = "overwrite the exported inner model";
-                        middleModel.returnsInner().should.be.deep.equal( innerModelClone );
+                        expect( middleModel.returnsInner() ).to.deep.equal( innerModelClone );
 
                     } );
 
@@ -367,7 +367,7 @@
 
                         // Middle model has been properly cloned
                         exported.returnsInner.appendedAfterwards = "should not appear in middle model";
-                        middleModel.should.not.have.a.property( "appendedAfterwards" );
+                        expect( middleModel ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -378,7 +378,7 @@
 
                         // Outer model still holds a reference to the original middle model
                         exported.returnsInner = "overwrite the exported middle model";
-                        outerModel.returnsInner().should.be.deep.equal( middleModelClone );
+                        expect( outerModel.returnsInner() ).to.deep.equal( middleModelClone );
 
                     } );
 
@@ -391,8 +391,8 @@
                         outerModel.setInnerObject( innerCollection );
                         var exported = outerModel.export();
 
-                        innerCollection.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( { returnsInner: innerCollection.export() } );
+                        expect( innerCollection.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( { returnsInner: innerCollection.export() } );
 
                     } );
 
@@ -403,7 +403,7 @@
 
                         // Inner model has been properly cloned
                         exported.returnsInner.appendedAfterwards = "should not appear in inner collection";
-                        innerCollection.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerCollection ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -414,7 +414,7 @@
 
                         // Outer model still holds a reference to the original inner model
                         exported.returnsInner = "overwrite the exported inner collection";
-                        outerModel.returnsInner().should.be.deep.equal( innerCollectionClone );
+                        expect( outerModel.returnsInner() ).to.deep.equal( innerCollectionClone );
 
                     } );
 
@@ -427,8 +427,8 @@
                         var model = new Backbone.Model( { containerAttribute: innerModel } );
                         var exported = model.export();
 
-                        innerModel.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( { containerAttribute: innerModel.export() } );
+                        expect( innerModel.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( { containerAttribute: innerModel.export() } );
 
                     } );
 
@@ -438,7 +438,7 @@
                         var exported = model.export();
 
                         exported.containerAttribute.appendedAfterwards = "should not appear in inner model";
-                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerModel ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -448,7 +448,7 @@
                         var exported = model.export();
 
                         exported.containerAttribute = "overwrite the exported inner collection";
-                        model.get( "containerAttribute" ).should.be.deep.equal( innerModelClone );
+                        expect( model.get( "containerAttribute" ) ).to.deep.equal( innerModelClone );
 
                     } );
 
@@ -461,8 +461,8 @@
                         var model = new Backbone.Model( { containerAttribute: innerCollection } );
                         var exported = model.export();
 
-                        innerCollection.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( { containerAttribute: innerCollection.export() } );
+                        expect( innerCollection.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( { containerAttribute: innerCollection.export() } );
 
                     } );
 
@@ -472,7 +472,7 @@
                         var exported = model.export();
 
                         exported.containerAttribute.appendedAfterwards = "should not appear in inner collection";
-                        innerCollection.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerCollection ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -482,7 +482,7 @@
                         var exported = model.export();
 
                         exported.containerAttribute = "overwrite the exported inner collection";
-                        model.get( "containerAttribute" ).should.be.deep.equal( innerCollectionClone );
+                        expect( model.get( "containerAttribute" ) ).to.deep.equal( innerCollectionClone );
 
                     } );
 
@@ -495,8 +495,8 @@
                         outerModel.setInnerObject( deeplyNestedModel );
                         var exported = outerModel.export();
 
-                        innerModel.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( { returnsInner: deeplyNestedModel_ExpectedExport } );
+                        expect( innerModel.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( { returnsInner: deeplyNestedModel_ExpectedExport } );
 
                     } );
 
@@ -506,7 +506,7 @@
                         var exported = outerModel.export();
 
                         exported.returnsInner.levelOneProp[1].nestedHere.appendedAfterwards = "should not appear in inner model";
-                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerModel ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -516,7 +516,7 @@
                         var exported = outerModel.export();
 
                         exported.returnsInner.levelOneProp[1].nestedHere = "overwrite the exported inner model";
-                        outerModel.returnsInner().should.be.deep.equal( deeplyNestedModelClone );
+                        expect( outerModel.returnsInner() ).to.deep.equal( deeplyNestedModelClone );
 
                     } );
 
@@ -529,8 +529,8 @@
                         outerModel.setInnerObject( deeplyNestedCollection );
                         var exported = outerModel.export();
 
-                        innerCollection.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( { returnsInner: deeplyNestedCollection_expectedExport } );
+                        expect( innerCollection.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( { returnsInner: deeplyNestedCollection_expectedExport } );
 
                     } );
 
@@ -540,7 +540,7 @@
                         var exported = outerModel.export();
 
                         exported.returnsInner.levelOneProp[1].nestedHere.appendedAfterwards = "should not appear in inner model";
-                        innerCollection.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerCollection ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -550,7 +550,7 @@
                         var exported = outerModel.export();
 
                         exported.returnsInner.levelOneProp[1].nestedHere = "overwrite the exported inner collection";
-                        outerModel.returnsInner().should.be.deep.equal( deeplyNestedCollectionClone );
+                        expect( outerModel.returnsInner() ).to.deep.equal( deeplyNestedCollectionClone );
 
                     } );
 
@@ -563,8 +563,8 @@
                         var model = new Backbone.Model( { containerAttribute: deeplyNestedModel } );
                         var exported = model.export();
 
-                        innerModel.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( { containerAttribute: deeplyNestedModel_ExpectedExport } );
+                        expect( innerModel.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( { containerAttribute: deeplyNestedModel_ExpectedExport } );
 
                     } );
 
@@ -574,7 +574,7 @@
                         var exported = model.export();
 
                         exported.containerAttribute.levelOneProp[1].nestedHere.appendedAfterwards = "should not appear in inner model";
-                        innerModel.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerModel ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -584,7 +584,7 @@
                         var exported = model.export();
 
                         exported.containerAttribute.levelOneProp[1].nestedHere = "overwrite the exported inner collection";
-                        model.get( "containerAttribute" ).should.be.deep.equal( deeplyNestedModelClone );
+                        expect( model.get( "containerAttribute" ) ).to.deep.equal( deeplyNestedModelClone );
 
                     } );
 
@@ -597,8 +597,8 @@
                         var model = new Backbone.Model( { containerAttribute: deeplyNestedCollection } );
                         var exported = model.export();
 
-                        innerCollection.export.should.have.been.calledOnce;
-                        exported.should.be.deep.equal( { containerAttribute: deeplyNestedCollection_expectedExport } );
+                        expect( innerCollection.export ).to.have.been.calledOnce;
+                        expect( exported ).to.deep.equal( { containerAttribute: deeplyNestedCollection_expectedExport } );
 
                     } );
 
@@ -608,7 +608,7 @@
                         var exported = model.export();
 
                         exported.containerAttribute.levelOneProp[1].nestedHere.appendedAfterwards = "should not appear in inner model";
-                        innerCollection.should.not.have.a.property( "appendedAfterwards" );
+                        expect( innerCollection ).not.to.have.a.property( "appendedAfterwards" );
 
                     } );
 
@@ -618,7 +618,7 @@
                         var exported = model.export();
 
                         exported.containerAttribute.levelOneProp[1].nestedHere = "overwrite the exported inner collection";
-                        model.get( "containerAttribute" ).should.be.deep.equal( deeplyNestedCollectionClone );
+                        expect( model.get( "containerAttribute" ) ).to.deep.equal( deeplyNestedCollectionClone );
 
                     } );
 
@@ -683,7 +683,7 @@
                     for ( var i = 0; i <= maxHops; i++ ) expectedHash = { next: expectedHash };
 
                     var exported = model1.export();
-                    exported.should.be.deep.equal( expectedHash );
+                    expect( exported ).to.deep.equal( expectedHash );
                 } );
 
                 withoutCloneDeep_they( '[- _.cloneDeep] return a reference to the last model when the recursion limit has been reached', function () {
@@ -702,7 +702,7 @@
                     var inner = exported.next;
                     while ( !_.isFunction( inner.next ) ) inner = inner.next;
 
-                    inner.should.be.deep.equal( expectedLast );
+                    expect( inner ).to.deep.equal( expectedLast );
                 } );
 
                 withCloneDeep_they( '[+ _.cloneDeep] return a _.cloneDeep representation of the last model (deep clone of properties) when the recursion limit has been reached', function () {
@@ -722,7 +722,7 @@
                     var inner = exported.next;
                     while ( inner.next ) inner = inner.next;
 
-                    inner.should.be.deep.equal( expectedLast );
+                    expect( inner ).to.deep.equal( expectedLast );
                 } );
 
             } );
@@ -740,7 +740,7 @@
                 var propHash = model.toJSON();
 
                 model.export();
-                model.onExport.should.have.been.calledWithExactly( propHash );
+                expect( model.onExport ).to.have.been.calledWithExactly( propHash );
 
             } );
 
@@ -751,7 +751,7 @@
                 sinon.spy( model, "onExport" );
 
                 model.export();
-                model.onExport.should.have.been.calledWithExactly( { method: "returning a value" } );
+                expect( model.onExport ).to.have.been.calledWithExactly( { method: "returning a value" } );
 
             } );
 
@@ -766,7 +766,7 @@
                 var model = new Model();
                 model.set( { property: "in original state" } );
 
-                model.export().should.have.a.property( 'property' ).with.a.string( "in modified state" );
+                expect( model.export() ).to.have.a.property( 'property' ).with.a.string( "in modified state" );
 
             } );
 
@@ -782,7 +782,7 @@
                 var model = new Model();
 
                 model.export();
-                model.get( "innerObject" ).should.deep.equal( { whoami: "inner object, model data" } );
+                expect( model.get( "innerObject" ) ).to.deep.equal( { whoami: "inner object, model data" } );
 
             } );
 
@@ -798,7 +798,7 @@
                 var model = new Model();
 
                 model.export();
-                model.get( "innerObject" ).whoami.should.equal( "inner object, model data" );
+                expect( model.get( "innerObject" ).whoami ).to.equal( "inner object, model data" );
 
             } );
 
@@ -812,7 +812,7 @@
                 sinon.spy( model, "onBeforeExport" );
 
                 model.export();
-                model.onBeforeExport.should.have.been.calledOnce;
+                expect( model.onBeforeExport ).to.have.been.calledOnce;
 
             } );
 
@@ -827,7 +827,7 @@
 
                 model.set( { property: "in original state" } );
 
-                model.export().should.have.a.property( 'property' ).with.a.string( "in modified state" );
+                expect( model.export() ).to.have.a.property( 'property' ).with.a.string( "in modified state" );
 
             } );
 
@@ -842,7 +842,7 @@
                 } );
                 var model = new Model();
 
-                model.export().should.have.a.property( 'method' ).with.a.string( "manipulated method return value" );
+                expect( model.export() ).to.have.a.property( 'method' ).with.a.string( "manipulated method return value" );
 
             } );
 
@@ -853,7 +853,7 @@
                 sinon.spy( model, "onExport" );
 
                 model.export();
-                model.onBeforeExport.should.have.been.calledBefore( model.onExport );
+                expect( model.onBeforeExport ).to.have.been.calledBefore( model.onExport );
 
             } );
 
@@ -867,7 +867,7 @@
                 sinon.spy( model, "onAfterExport" );
 
                 model.export();
-                model.onAfterExport.should.have.been.calledOnce;
+                expect( model.onAfterExport ).to.have.been.calledOnce;
 
             } );
 
@@ -882,8 +882,8 @@
 
                 model.set( { property: "in original state" } );
 
-                model.export().should.have.a.property( 'property' ).with.a.string( "in original state" );
-                model.get( 'property' ).should.be.a.string( "in modified state" );
+                expect( model.export() ).to.have.a.property( 'property' ).with.a.string( "in original state" );
+                expect( model.get( 'property' ) ).to.be.a.string( "in modified state" );
 
             } );
 
@@ -898,8 +898,8 @@
                 } );
                 var model = new Model();
 
-                model.export().should.have.a.property( 'method' ).with.a.string( "original method return value" );
-                model.method().should.be.a.string( "manipulated method return value" );
+                expect( model.export() ).to.have.a.property( 'method' ).with.a.string( "original method return value" );
+                expect( model.method() ).to.be.a.string( "manipulated method return value" );
 
             } );
 
@@ -910,7 +910,7 @@
                 sinon.spy( model, "onExport" );
 
                 model.export();
-                model.onAfterExport.should.have.been.calledAfter( model.onExport );
+                expect( model.onAfterExport ).to.have.been.calledAfter( model.onExport );
 
             } );
 

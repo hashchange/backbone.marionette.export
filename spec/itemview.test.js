@@ -26,7 +26,7 @@
                 sinon.spy( model, "export" );
 
                 itemView.render();
-                model.export.should.have.been.calledOnce;
+                expect( model.export ).to.have.been.calledOnce;
 
             } );
 
@@ -42,7 +42,7 @@
 
                 var exportedModel = model.export();
                 itemView.render();
-                itemView.template.should.have.been.calledWithExactly( exportedModel );
+                expect( itemView.template ).to.have.been.calledWithExactly( exportedModel );
 
             } );
 
@@ -58,7 +58,7 @@
                 sinon.spy( collection, "export" );
 
                 itemView.render();
-                collection.export.should.have.been.calledOnce;
+                expect( collection.export ).to.have.been.calledOnce;
 
             } );
 
@@ -79,7 +79,7 @@
                 sinon.spy( itemView, "template" );
 
                 itemView.render();
-                itemView.template.should.have.been.calledWithExactly( sinon.match( function ( templateData ) {
+                expect( itemView.template ).to.have.been.calledWithExactly( sinon.match( function ( templateData ) {
                     return templateData.items && _.isEqual( _.pairs( templateData.items ), _.pairs( collection.export() ) );
                 } ) );
                 //
@@ -107,7 +107,7 @@
                 sinon.spy( itemView, "template" );
 
                 itemView.render();
-                itemView.template.should.have.been.calledWithExactly( sinon.match.has( "items", collection.export() ) );
+                expect( itemView.template ).to.have.been.calledWithExactly( sinon.match.has( "items", collection.export() ) );
                 //
                 // NB: sinon.match.has does compare the array, but does NOT pick up any custom properties attached to
                 // the array object. Here, we only verify that the content of the arrays, ie the items in it, are

@@ -47,7 +47,7 @@
                 var collection = new Backbone.Collection( modelsWithExportedMethods );
 
                 var exportedModels = _.map( modelsWithExportedMethods, function ( model ) { return model.export(); } );
-                collection.export().should.deep.equal( exportedModels );
+                expect( collection.export() ).to.deep.equal( exportedModels );
 
             } );
 
@@ -60,7 +60,7 @@
                 collection.export();
 
                 _.each( models, function ( model ) {
-                    model.export.should.have.been.calledOnce;
+                    expect( model.export ).to.have.been.calledOnce;
                 } );
 
                 // Remove the spy
@@ -71,7 +71,7 @@
             it( 'returns an empty array if the collection does not hold any models', function () {
 
                 var collection = new Backbone.Collection();
-                collection.export().should.deep.equal( [] );
+                expect( collection.export() ).to.deep.equal( [] );
 
             } );
 
@@ -81,7 +81,7 @@
                 sinon.spy( collectionWithMethods, "method" );
 
                 collectionWithMethods.export();
-                collectionWithMethods.method.should.not.have.been.called;
+                expect( collectionWithMethods.method ).not.to.have.been.called;
 
             } );
 
@@ -90,7 +90,7 @@
                 var collectionWithMethods = new CollectionWithMethods( modelsWithExportedMethods );
                 var plainCollection       = new Backbone.Collection( modelsWithExportedMethods );
 
-                collectionWithMethods.export().should.deep.equal( plainCollection.export() );
+                expect( collectionWithMethods.export() ).to.deep.equal( plainCollection.export() );
 
             } );
 
@@ -105,7 +105,7 @@
                     var Collection = CollectionWithMethods.extend( { exportable: "method" } );
                     var collection = new Collection( models );
 
-                    collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
+                    expect( collection.export() ).to.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
 
                 } );
 
@@ -114,7 +114,7 @@
                     var Collection = CollectionWithMethods.extend( { exportable: "this.method" } );
                     var collection = new Collection( models );
 
-                    collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
+                    expect( collection.export() ).to.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
 
                 } );
 
@@ -126,8 +126,8 @@
                     } );
                     var collection = new Collection( models );
 
-                    collection.export().should.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
-                    collection.export().should.have.a.property( 'anotherMethod' ).with.a.string( "another collection method, returning a value" );
+                    expect( collection.export() ).to.have.a.property( 'method' ).with.a.string( "collection method, returning a value" );
+                    expect( collection.export() ).to.have.a.property( 'anotherMethod' ).with.a.string( "another collection method, returning a value" );
 
                 } );
 
@@ -141,7 +141,7 @@
                     var collection = new Collection( models );
 
                     var exportedModelHashes = _.map( models, function( model ) { return model.export(); } );
-                    collection.export().should.eql( exportedModelHashes );
+                    expect( collection.export() ).to.eql( exportedModelHashes );
 
                 } );
 
@@ -164,7 +164,7 @@
 
                     var exportFunction = _.bind( collection.export, collection );
 
-                    exportFunction.should.throw( Error, "Can't export \"missing\". The method doesn't exist" );
+                    expect( exportFunction ).to.throw( Error, "Can't export \"missing\". The method doesn't exist" );
 
                 } );
 
@@ -180,7 +180,7 @@
                     var collection = new Collection( models );
 
                     var exportFunction = _.bind( collection.export, collection );
-                    exportFunction.should.throw( Error, "'exportable' property: Invalid method identifier" );
+                    expect( exportFunction ).to.throw( Error, "'exportable' property: Invalid method identifier" );
 
                 } );
 
@@ -194,7 +194,7 @@
 
                     var exportFunction = _.bind( collection.export, collection );
 
-                    exportFunction.should.throw( Error, "Can't export a property with a name which is reserved for a native array property. Offending properties: join" );
+                    expect( exportFunction ).to.throw( Error, "Can't export a property with a name which is reserved for a native array property. Offending properties: join" );
 
                 } );
 
@@ -209,7 +209,7 @@
 
                     var expectedModelHashes = _.map( modelsWithExportedMethods, function( model ) { return model.export(); } );
                     var exportedModelHashes = _.map( collection.export(), function( modelHash ) {return modelHash; } );
-                    exportedModelHashes.should.deep.equal( expectedModelHashes );
+                    expect( exportedModelHashes ).to.deep.equal( expectedModelHashes );
 
                 } );
 
@@ -223,7 +223,7 @@
                     } );
                     var collection = new Collection();
 
-                    collection.export().should.deep.equal( [] );
+                    expect( collection.export() ).to.deep.equal( [] );
                 } );
 
             } );
@@ -237,7 +237,7 @@
                     } );
                     var collection = new Collection();
 
-                    collection.export().should.have.a.property( 'property' ).with.a.string( "string property value" );
+                    expect( collection.export() ).to.have.a.property( 'property' ).with.a.string( "string property value" );
                 } );
 
                 it( 'exports properties with a boolean value of true', function () {
@@ -247,9 +247,9 @@
                     } );
                     var collection = new Collection();
 
-                    collection.export().should.have.a.property( 'property' );
-                    collection.export().property.should.be.a( 'boolean' );
-                    collection.export().property.should.be.true;
+                    expect( collection.export() ).to.have.a.property( 'property' );
+                    expect( collection.export().property ).to.be.a( 'boolean' );
+                    expect( collection.export().property ).to.be.true;
                 } );
 
                 it( 'exports properties with a boolean value of false', function () {
@@ -259,9 +259,9 @@
                     } );
                     var collection = new Collection();
 
-                    collection.export().should.have.a.property( 'property' );
-                    collection.export().property.should.be.a( 'boolean' );
-                    collection.export().property.should.be.false;
+                    expect( collection.export() ).to.have.a.property( 'property' );
+                    expect( collection.export().property ).to.be.a( 'boolean' );
+                    expect( collection.export().property ).to.be.false;
                 } );
 
                 it( 'exports properties with a null value', function () {
@@ -274,8 +274,8 @@
                     var expected = [];
                     expected.property = null;
 
-                    collection.export().should.have.a.property( 'property' );
-                    collection.export().should.deep.equal( expected );
+                    expect( collection.export() ).to.have.a.property( 'property' );
+                    expect( collection.export() ).to.deep.equal( expected );
                 } );
 
                 it( 'ignores properties which exist, but have a value of undefined', function () {
@@ -286,7 +286,7 @@
                     } );
                     var collection = new Collection();
 
-                    collection.export().should.deep.equal( [] );
+                    expect( collection.export() ).to.deep.equal( [] );
                 } );
 
                 it( 'attaches exported properties to the array of models (as direct properties of the array object)', function () {
@@ -301,7 +301,7 @@
                     var expectedExport = expectedModelHashes;
                     expectedExport.property = "ordinary property value";
 
-                    collection.export().should.deep.equal( expectedExport );
+                    expect( collection.export() ).to.deep.equal( expectedExport );
                 } );
 
             } );
@@ -370,8 +370,8 @@
                     var expectedArr = [];
                     expectedArr.returnsInner = innerModel_expectedExport;
 
-                    innerModel.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( expectedArr );
+                    expect( innerModel.export ).to.have.been.calledOnce;
+                    expect( exported ).to.deep.equal( expectedArr );
                 } );
 
                 it_acts_recursively( 'on inner, nested collections which are returned by an exported collection method', function () {
@@ -384,8 +384,8 @@
                     var expectedArr = [];
                     expectedArr.returnsInner = innerCollection_expectedExport;
 
-                    innerCollection.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( expectedArr );
+                    expect( innerCollection.export ).to.have.been.calledOnce;
+                    expect( exported ).to.deep.equal( expectedArr );
 
                 } );
 
@@ -399,8 +399,8 @@
                     var expectedArr = [];
                     expectedArr.propWithInnerObject = innerModel_expectedExport;
 
-                    innerModel.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( expectedArr );
+                    expect( innerModel.export ).to.have.been.calledOnce;
+                    expect( exported ).to.deep.equal( expectedArr );
 
                 } );
 
@@ -414,8 +414,8 @@
                     var expectedArr = [];
                     expectedArr.propWithInnerObject = innerCollection_expectedExport;
 
-                    innerCollection.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( expectedArr );
+                    expect( innerCollection.export ).to.have.been.calledOnce;
+                    expect( exported ).to.deep.equal( expectedArr );
 
                 } );
 
@@ -429,8 +429,8 @@
                     var expectedArr = [];
                     expectedArr.returnsInner = deeplyNestedModel_ExpectedExport;
 
-                    innerModel.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( expectedArr );
+                    expect( innerModel.export ).to.have.been.calledOnce;
+                    expect( exported ).to.deep.equal( expectedArr );
 
                 } );
 
@@ -444,8 +444,8 @@
                     var expectedArr = [];
                     expectedArr.returnsInner = deeplyNestedCollection_expectedExport;
 
-                    innerCollection.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( expectedArr );
+                    expect( innerCollection.export ).to.have.been.calledOnce;
+                    expect( exported ).to.deep.equal( expectedArr );
 
                 } );
 
@@ -459,8 +459,8 @@
                     var expectedArr = [];
                     expectedArr.propWithInnerObject = deeplyNestedModel_ExpectedExport;
 
-                    innerModel.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( expectedArr );
+                    expect( innerModel.export ).to.have.been.calledOnce;
+                    expect( exported ).to.deep.equal( expectedArr );
 
                 } );
 
@@ -474,8 +474,8 @@
                     var expectedArr = [];
                     expectedArr.propWithInnerObject = deeplyNestedCollection_expectedExport;
 
-                    innerCollection.export.should.have.been.calledOnce;
-                    exported.should.be.deep.equal( expectedArr );
+                    expect( innerCollection.export ).to.have.been.calledOnce;
+                    expect( exported ).to.deep.equal( expectedArr );
 
                 } );
 
@@ -503,7 +503,7 @@
                     // hop).
                     var hops = collection1.export.callCount + collection2.export.callCount - 1;
 
-                    hops.should.equal( Collection.prototype.export.global.maxHops );
+                    expect( hops ).to.equal( Collection.prototype.export.global.maxHops );
 
                 } );
 
@@ -521,7 +521,7 @@
                 var exportedModels = _.map( modelsWithExportedMethods, function( model ) { return model.export(); } );
 
                 collection.export();
-                collection.onExport.should.have.been.calledWithExactly( exportedModels );
+                expect( collection.onExport ).to.have.been.calledWithExactly( exportedModels );
 
             } );
 
@@ -535,7 +535,7 @@
                 expected.method = "collection method, returning a value";
 
                 collection.export();
-                collection.onExport.should.have.been.calledWithExactly( expected );
+                expect( collection.onExport ).to.have.been.calledWithExactly( expected );
 
             } );
 
@@ -550,7 +550,7 @@
                 } );
                 var collection = new Collection();
 
-                collection.export().should.have.a.property( 'property' ).with.a.string( "in modified state" );
+                expect( collection.export() ).to.have.a.property( 'property' ).with.a.string( "in modified state" );
 
             } );
 
@@ -567,7 +567,7 @@
 
                 var exportFunction = _.bind( collection.export, collection );
 
-                exportFunction.should.throw( Error, /Can't export a property with a name which is reserved for a native array property\. Offending properties: (join, concat|concat, join)/ );
+                expect( exportFunction ).to.throw( Error, /Can't export a property with a name which is reserved for a native array property\. Offending properties: (join, concat|concat, join)/ );
 
             } );
 
@@ -581,7 +581,7 @@
                 sinon.spy( collection, "onBeforeExport" );
 
                 collection.export();
-                collection.onBeforeExport.should.have.been.calledOnce;
+                expect( collection.onBeforeExport ).to.have.been.calledOnce;
 
             } );
 
@@ -596,7 +596,7 @@
                 } );
                 var collection = new Collection();
 
-                collection.export().should.be.deep.equal( [ traceMe.export() ] );
+                expect( collection.export() ).to.deep.equal( [ traceMe.export() ] );
 
             } );
 
@@ -611,7 +611,7 @@
                 } );
                 var collection = new Collection();
 
-                collection.export().should.have.a.property( 'method' ).with.a.string( "manipulated method return value" );
+                expect( collection.export() ).to.have.a.property( 'method' ).with.a.string( "manipulated method return value" );
 
             } );
 
@@ -627,7 +627,7 @@
                 var collection = new Collection();
 
                 collection.export();
-                collection.at( 0 ).should.be.deep.equal( traceMe );
+                expect( collection.at( 0 ) ).to.deep.equal( traceMe );
 
             } );
 
@@ -638,7 +638,7 @@
                 sinon.spy( collection, "onExport" );
 
                 collection.export();
-                collection.onBeforeExport.should.have.been.calledBefore( collection.onExport );
+                expect( collection.onBeforeExport ).to.have.been.calledBefore( collection.onExport );
 
             } );
 
@@ -652,7 +652,7 @@
                 sinon.spy( collection, "onAfterExport" );
 
                 collection.export();
-                collection.onAfterExport.should.have.been.calledOnce;
+                expect( collection.onAfterExport ).to.have.been.calledOnce;
 
             } );
 
@@ -667,8 +667,8 @@
                 } );
                 var collection = new Collection();
 
-                collection.export().should.be.deep.equal( [] );
-                collection.at( 0 ).should.be.deep.equal( traceMe );
+                expect( collection.export() ).to.deep.equal( [] );
+                expect( collection.at( 0 ) ).to.deep.equal( traceMe );
 
             } );
 
@@ -683,8 +683,8 @@
                 } );
                 var collection = new Collection();
 
-                collection.export().should.have.a.property( 'method' ).with.a.string( "original method return value" );
-                collection.method().should.be.a.string( "manipulated method return value" );
+                expect( collection.export() ).to.have.a.property( 'method' ).with.a.string( "original method return value" );
+                expect( collection.method() ).to.be.a.string( "manipulated method return value" );
 
             } );
 
@@ -695,7 +695,7 @@
                 sinon.spy( collection, "onExport" );
 
                 collection.export();
-                collection.onAfterExport.should.have.been.calledAfter( collection.onExport );
+                expect( collection.onAfterExport ).to.have.been.calledAfter( collection.onExport );
 
             } );
 
