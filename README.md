@@ -221,6 +221,8 @@ The export functionality in models and collections is wired up with Marionette v
 
 When you grab model or collection data during render(), call `model.export()` or `collection.export()` instead of their `toJSON` counterparts. That's all there is to it.
 
+_(If you have to support old browsers which are based on ES3, don't call `export` as shown above, in dot notation. Because `export` is a [reserved keyword][6], using it as a property name [may throw an error][7] in ES3-compliant browsers, and in fact it does [in IE8 and Android 2.x][8]. Use the bracket notation instead: `model["export"]()` or `collection["export"]()`.)_
+
 
 ## Dependencies
 
@@ -271,6 +273,11 @@ In case anything about the test and build process needs to be changed, have a lo
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
 ## Release Notes
+
+### v2.1.1
+
+- Made the component backward compatible with ES3 (fix for IE8)
+- Fixed strict mode in AMD build
 
 ### v2.1.0
 
@@ -323,6 +330,9 @@ Copyright (c) 2014 Michael Heim.
 [3]: https://github.com/jashkenas/underscore/pull/595 "Underscore Pull Request #595: Deep copying with _.clone(obj, deep)"
 [4]: http://coding.smashingmagazine.com/2013/08/09/backbone-js-tips-patterns/ "Backbone.js Tips And Patterns: Perform Deep Copies Of Objects"
 [5]: https://github.com/bestiejs/lodash/issues/206 "lodash Issue #206: Underscore compatibility"
+[6]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords "MDN JavaScript Reference: Lexical grammar - Keywords"
+[7]: http://mathiasbynens.be/notes/javascript-properties "Unquoted property names / object keys in JavaScript"
+[8]: http://stackoverflow.com/questions/23105089/angular-q-catch-method-fails-in-ie8/23105836#23105836 "Stack Overflow answer: Reserved keywords in IE8 and Android 2.x"
 
 [use-case]: #use-case "Backbone.Marionette.Export: Use case"
 [use-with-plain-backbone]: #but-i-dont-use-marionette "Using Backbone.Marionette.Export with plain Backbone"
