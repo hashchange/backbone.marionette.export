@@ -1,30 +1,40 @@
-// Backbone.Marionette.Export, v2.1.0
+// Backbone.Marionette.Export, v2.1.1
 // Copyright (c)2014 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.marionette.export
 
 ;( function ( root, factory ) {
+    "use strict";
+
     if ( typeof exports === 'object' ) {
 
-        var underscore = require( 'underscore' );
-        var backbone = require( 'backbone' );
-
-        module.exports = factory( underscore, backbone );
+        module.exports = factory(
+            require( 'underscore' ),
+            require( 'backbone' )
+        );
 
     } else if ( typeof define === 'function' && define.amd ) {
 
-        define( ['underscore', 'backbone'], factory );
+        define( [
+            'underscore',
+            'backbone'
+        ], factory );
 
     }
 }( this, function ( _, Backbone ) {
-    "option strict";
+    "use strict";
 
     ;( function( Backbone, _ ) {
         "use strict";
     
         /**
-         * Captures all properties of an object, all the way up the prototype chain. Returns them as an array of property
-         * names.
+         * Captures all properties of an object, including the non-enumerable ones, all the way up the prototype chain.
+         * Returns them as an array of property names.
+         *
+         * In legacy browsers which don't support Object.getOwnPropertyNames, only enumerable properties are returned.
+         * There is no alternative way to list non-enumerable properties in ES3, which these browsers are based on (see
+         * http://stackoverflow.com/a/8241423/508355). Listing the enumerable properties is usually good enough, though.
+         * Affects IE8.
          *
          * Code lifted from the MDC docs, http://goo.gl/hw2h4G
          *
@@ -33,11 +43,21 @@
          */
         function listAllProperties ( obj ) {
     
-            var objectToInspect;
-            var result = [];
+            var objectToInspect,
+                property,
+                result = [];
     
-            for ( objectToInspect = obj; objectToInspect !== null; objectToInspect = Object.getPrototypeOf( objectToInspect ) ) {
-                result = result.concat( Object.getOwnPropertyNames( objectToInspect ) );
+            if ( Object.getPrototypeOf && Object.getOwnPropertyNames ) {
+    
+                // Modern browser. Return enumerable and non-enumerable properties, all up the prototype chain.
+                for ( objectToInspect = obj; objectToInspect !== null; objectToInspect = Object.getPrototypeOf( objectToInspect ) ) {
+                    result = result.concat( Object.getOwnPropertyNames( objectToInspect ) );
+                }
+    
+            } else {
+    
+                // Legacy browser. Return enumerable properties only, all up the prototype chain.
+                for ( property in obj ) result.push( property );
             }
     
             return _.unique( result );
@@ -77,14 +97,14 @@
             return data;
         };
     
-        Backbone.Model.prototype.export = Backbone.Collection.prototype.export = function () {
+        Backbone.Model.prototype["export"] = Backbone.Collection.prototype["export"] = function () {
             var data, exportable, conflicts, hops;
     
             function allowExport ( obj ) {
                 return (
-                    obj && obj.export
-                    && ( obj instanceof Backbone.Model || obj instanceof Backbone.Collection )
-                    && hops < obj.export.global.maxHops
+                    obj && obj["export"] &&
+                    ( obj instanceof Backbone.Model || obj instanceof Backbone.Collection ) &&
+                    hops < obj["export"].global.maxHops
                 );
             }
     
@@ -101,7 +121,7 @@
                 //
                 // We use the enhancements of model.export instead. But still, we get no more than an array of model hashes
                 // at this point.
-                data = this.map( function ( model ) { return allowExport( model ) ? model.export( hops + 1 ) : model; } );
+                data = this.map( function ( model ) { return allowExport( model ) ? model["export"]( hops + 1 ) : model; } );
     
             } else {
     
@@ -113,7 +133,7 @@
                     // Backbone models and collections in the process (up to the maximum recursion depth, then switching to
                     // cloning without calls to export() ).
                     data = _.cloneDeep( this.attributes, function ( attribute ) {
-                        return allowExport( attribute ) ? attribute.export( hops + 1 ) : undefined; }
+                        return allowExport( attribute ) ? attribute["export"]( hops + 1 ) : undefined; }
                     );
     
                 } else {
@@ -125,7 +145,7 @@
                     // Call export() recursively on attributes holding a Backbone model or collection, up to the maximum
                     // recursion depth.
                     _.each( data, function ( attrValue, attrName, data ) {
-                        if ( allowExport( attrValue ) ) data[attrName] = attrValue.export( hops + 1 );
+                        if ( allowExport( attrValue ) ) data[attrName] = attrValue["export"]( hops + 1 );
                     } );
     
                 }
@@ -145,7 +165,7 @@
     
                     // The configuration can be read off either the Model or Collection prototype;
                     // both reference the same object.
-                        strictMode = this.export.global.strict;
+                        strictMode = this["export"].global.strict;
     
                     if ( _.isUndefined( method ) ) throw new Error( "Can't export method. Undefined method reference" );
     
@@ -194,11 +214,11 @@
                         // With Lo-dash / deep-cloning ability: clone other objects, too, and also call export on Backbone
                         // models or collections deeply nested within those objects.
                         data[name] = _.cloneDeep( data[name], function ( value ) {
-                                return allowExport( value ) ? value.export( hops + 1 ) : undefined;
+                                return allowExport( value ) ? value["export"]( hops + 1 ) : undefined;
                         } );
     
                     } else {
-                        if ( allowExport( data[name] ) ) data[name] = data[name].export( hops + 1 );
+                        if ( allowExport( data[name] ) ) data[name] = data[name]["export"]( hops + 1 );
                     }
     
                     // Discard undefined values. According to the spec, valid JSON does not represent undefined values.
@@ -223,7 +243,7 @@
     
                 conflicts = _.intersection( nativeArrayProperties,  _.keys( data ) ) ;
                 if ( conflicts.length ) {
-                    throw new Error( "Can't export a property with a name which is reserved for a native array property. Offending properties: " + conflicts );
+                    throw new Error( "Can't export a property with a name which is reserved for a native array property. Offending properties: " + conflicts.join( ", " ) );
                 }
     
             }
@@ -231,7 +251,7 @@
             return data;
         };
     
-        Backbone.Model.prototype.export.global = Backbone.Collection.prototype.export.global = {
+        Backbone.Model.prototype["export"].global = Backbone.Collection.prototype["export"].global = {
             maxHops: 4,
             strict: false
         };
@@ -248,10 +268,10 @@
                 var data = {};
     
                 if ( this.model ) {
-                    data = this.model.export && this.model.export() || this.model.toJSON();
+                    data = this.model["export"] && this.model["export"]() || this.model.toJSON();
                 }
                 else if ( this.collection ) {
-                    data = { items: this.collection.export && this.collection.export() || this.collection.toJSON() };
+                    data = { items: this.collection["export"] && this.collection["export"]() || this.collection.toJSON() };
                 }
     
                 return data;
