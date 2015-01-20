@@ -6,7 +6,7 @@ The name of the plugin has turned out to be a bit of a misnomer, though. Backbon
 
 ## Setup
 
-Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette). The stable version of Backbone.Marionette.Export is available in the `dist` directory, including an AMD build. If you use Bower, fetch the files with `bower install backbone.marionette.export`. With npm, it is `npm install backbone.marionette.export`.
+Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette). The stable version of Backbone.Marionette.Export is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install backbone.marionette.export`. With npm, it is `npm install backbone.marionette.export`.
 
 Because Marionette is optional, it is not required as a dependency in the AMD/CJS build of Backbone.Marionette.Export. Your own code must make sure that Marionette is loaded first. With [RequireJS][], for instance, you'd use [a shim][RequireJS-shim] to express the dependency:
 
@@ -307,7 +307,12 @@ Bumping the major version is necessary because of changes to the public API, eve
 
 MIT.
 
-Copyright (c) 2014 Michael Heim.
+Copyright (c) 2014, 2015 Michael Heim.
+
+[dist-dev]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/backbone.marionette.export.js "backbone.marionette.export.js"
+[dist-prod]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/backbone.marionette.export.min.js "backbone.marionette.export.min.js"
+[dist-amd-dev]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/amd/backbone.marionette.export.js "backbone.marionette.export.js, AMD build"
+[dist-amd-prod]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/amd/backbone.marionette.export.min.js "backbone.marionette.export.min.js, AMD build"
 
 [Backbone]: http://backbonejs.org/ "Backbone.js"
 [Marionette]: https://github.com/marionettejs/backbone.marionette#readme "Marionette: a composite application library for Backbone.js"
