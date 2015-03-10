@@ -21,8 +21,8 @@
     "tests"
   ],
   "dependencies": {
-    "requirejs": "~2.1.14",
-    "foundation": "~5.3.3",
+    "requirejs": "~2.1.16",
+    "foundation": "~5.5.1",
     "jquery": "^1",
     "modernizr": "~2.8.3"
   },
