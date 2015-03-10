@@ -274,6 +274,11 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release Notes
 
+### v2.1.2
+
+- Updated component dependencies
+- Updated build environment
+
 ### v2.1.1
 
 - Made the component backward compatible with ES3 (fix for IE8)
