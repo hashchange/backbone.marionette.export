@@ -1,10 +1,10 @@
-( function ( Backbone, _, $ ) {
+( function ( Backbone, _ ) {
     "use strict";
 
     if ( !( this && this.console || window.console ) ) window.console = { log: function ( msg ) {} };
 
-    var $log = $( "#log" ),
-        $memtest = $( "#memtest" ),
+    var $log = Backbone.$( "#log" ),
+        $memtest = Backbone.$( "#memtest" ),
         $submit = $memtest.find( "#runMemtest" ),
 
         $modelSetSize = $memtest.find( "#modelSetSize" ),
@@ -141,4 +141,4 @@
 
     }
 
-}( Backbone, _, jQuery ));
+}( Backbone, _ ));

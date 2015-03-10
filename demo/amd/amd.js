@@ -36,13 +36,12 @@ requirejs.config( {
 
 require( [
 
-    'jquery',
     'underscore',
     'backbone',
     'marionette',
     'backbone.marionette.export'
 
-], function ( $, _, Backbone ) {
+], function ( _, Backbone ) {
 
     var Model = Backbone.Model.extend( {
             exportable: "someMethod",
