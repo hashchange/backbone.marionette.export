@@ -274,6 +274,10 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release Notes
 
+### v2.1.3
+
+- Updated Backbone dependency
+
 ### v2.1.2
 
 - Updated component dependencies
