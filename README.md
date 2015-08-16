@@ -10,7 +10,7 @@ Include backbone.marionette.export.js after Backbone and Marionette (if you use 
 
 Because Marionette is optional, it is not required as a dependency in the AMD/CJS build of Backbone.Marionette.Export. Your own code must make sure that Marionette is loaded first. With [RequireJS][], for instance, you'd use [a shim][RequireJS-shim] to express the dependency:
 
-```javascript
+```js
 requirejs.config({
     // ...
 
@@ -43,78 +43,90 @@ Backbone.Marionette.Export does not cause any such side effects. After dropping 
 ### The basics
 
 Here is how it works, in its simplest form:
-    
-    <script id="item-view-template" type="text/x-handlebars-template">
-        <p>Model method returns: {{foo}} </p>
-    </script>
+
+```html    
+<script id="item-view-template" type="text/x-handlebars-template">
+    <p>Model method returns: {{foo}} </p>
+</script>
+```
 
 `...`
 
-    var Model = Backbone.Model.extend ({
-        exportable: "foo",                 // <-- this is the one line you have to add
-        foo: function () { 
-            return "some calculated result of calling foo"; 
-        }
-    });
-    
-    var view = new Marionette.ItemView ({
-        model: new Model(),
-        template: "#item-view-template"
-    });
-    
-    view.render();
+```js
+var Model = Backbone.Model.extend ({
+    exportable: "foo",                 // <-- this is the one line you have to add
+    foo: function () { 
+        return "some calculated result of calling foo"; 
+    }
+});
+
+var view = new Marionette.ItemView ({
+    model: new Model(),
+    template: "#item-view-template"
+});
+
+view.render();
+```
 
 In the model definition, you declare which methods are available to a template. Just provide the method name to `exportable`, or an array of them. For method names, both `"foo"` and `"this.foo"` are acceptable.
 
 That works fine for simple method signatures. But what about **methods which take arguments**?
 
-    <script id="item-view-template" type="text/x-handlebars-template">
-        <p>Model method returns: {{foo}} </p>
-    </script>
+```html
+<script id="item-view-template" type="text/x-handlebars-template">
+    <p>Model method returns: {{foo}} </p>
+</script>
+```
 
 `...`
 
-    var Model = Backbone.Model.extend ({     
-    
-        foo: function ( arg ) { 
-            return "some calculated result of calling foo with " + arg; 
-        },
-    
-        onExport: function ( modelHash ) {
-            modelHash.foo = this.foo( someArg );
-            return modelHash;
-        }
-    
-    });
-    
-    var view = new Marionette.ItemView ({
-        model: new Model(),
-        template: "#item-view-template"
-    });
-    
-    view.render();
+```js
+var Model = Backbone.Model.extend ({     
+
+    foo: function ( arg ) { 
+        return "some calculated result of calling foo with " + arg; 
+    },
+
+    onExport: function ( modelHash ) {
+        modelHash.foo = this.foo( someArg );
+        return modelHash;
+    }
+
+});
+
+var view = new Marionette.ItemView ({
+    model: new Model(),
+    template: "#item-view-template"
+});
+
+view.render();
+```
 
 In this scenario, there is no need to declare the method as `exportable`. In fact, you can't: the method takes arguments, so it can't be called automatically. Instead, modify the exported model data in an `onExport` handler. You can do pretty much anything there. Just remember to return the data at the end.
 
 For a **collection**, the process is the same as for a model. 
 
-    <script id="item-view-template" type="text/x-handlebars-template">
-        <p>Collection method 'foo' returns: {{items.foo}} </p>
-    </script>
+```html
+<script id="item-view-template" type="text/x-handlebars-template">
+    <p>Collection method 'foo' returns: {{items.foo}} </p>
+</script>
+```
 
 `...`
 
-    var Collection = Backbone.Collection.extend ({
-        exportable: "foo",          
-        foo: function () { return "some calculated result of calling foo"; }
-    });
-    
-    var view = new Marionette.ItemView ({
-        collection: new Collection(),
-        template: "#item-view-template"
-    });
-    
-    view.render();
+```js
+var Collection = Backbone.Collection.extend ({
+    exportable: "foo",          
+    foo: function () { return "some calculated result of calling foo"; }
+});
+
+var view = new Marionette.ItemView ({
+    collection: new Collection(),
+    template: "#item-view-template"
+});
+
+view.render();
+```
 
 The collection data is provided to the template as it always is: in an `items` array. That is the [standard behaviour][2] of a Marionette ItemView and unrelated to Backbone.Marionette.Export.
 
@@ -126,28 +138,32 @@ Besides being an array, `items` is an object like any other. Arbitrary propertie
 
 Now, suppose a collection is passed to a template. What if it is made up of models which, in turn, have methods marked for export to the template?
 
-    <script id="item-view-template" type="text/x-handlebars-template">
-        <p>Method 'foo' of the first item in the collection returns: {{items.first.foo}} </p>
-        <p>Method 'foo' of the last item in the collection returns: {{items.last.foo}} </p>
-    </script>
+```html
+<script id="item-view-template" type="text/x-handlebars-template">
+    <p>Method 'foo' of the first item in the collection returns: {{items.first.foo}} </p>
+    <p>Method 'foo' of the last item in the collection returns: {{items.last.foo}} </p>
+</script>
+```
 
 `...`
 
-    var Model = Backbone.Model.extend ({
-        exportable: "foo",          
-        foo: function () { return "my cid is " + this.cid; }
-    });
-    
-    var Collection = Backbone.Collection.extend ({
-        exportable: [ "first", "last" ]              // <-- you can use it for built-in methods, too
-    });
-    
-    var view = new Marionette.ItemView ({
-        collection: new Collection( [ new Model(), new Model() ] ),
-        template: "#item-view-template"
-    });
-    
-    view.render();
+```js
+var Model = Backbone.Model.extend ({
+    exportable: "foo",          
+    foo: function () { return "my cid is " + this.cid; }
+});
+
+var Collection = Backbone.Collection.extend ({
+    exportable: [ "first", "last" ]           // <-- you can use it for built-in methods, too
+});
+
+var view = new Marionette.ItemView ({
+    collection: new Collection( [ new Model(), new Model() ] ),
+    template: "#item-view-template"
+});
+
+view.render();
+```
 
 The message here is that the plugin handles recursion for you, no matter of what kind. You can have a collection method return another, nested collection, which in turn holds models with methods marked for export. It all gets exported, just as you would expect, without any additional measures on your part.
 
