@@ -42,7 +42,7 @@ module.exports = function(config) {
       'src/backbone.marionette.export.js',
 
       // Tests
-      'spec/**/*.+(spec|test).js'
+      'spec/**/*.+(spec|test|tests).js'
     ],
 
 
@@ -78,10 +78,11 @@ module.exports = function(config) {
     // - Chrome
     // - ChromeCanary
     // - Firefox
-    // - Opera (has to be installed with `npm install karma-opera-launcher`)
-    // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
+    // - Opera
+    // - Safari
     // - PhantomJS
-    // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
+    // - SlimerJS
+    // - IE (Windows only)
     //
     // ATTN Interactive debugging in PhpStorm/WebStorm doesn't work with PhantomJS. Use Firefox or Chrome instead.
     browsers: ['PhantomJS'],
