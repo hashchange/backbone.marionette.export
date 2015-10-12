@@ -15,6 +15,23 @@
         withCloneDeep_describe = ( _.cloneDeep ? describe : describe.skip ),
         withoutCloneDeep_they = ( _.cloneDeep ? it.skip : it );                 // Underscore (no deep cloning support)
 
+    // ATTN Using cloneDeep:
+    //
+    // A comparison of an object with its clone can fail when using current versions of Chai (used to work previously).
+    // The reason seems to be that methods and properties from the objects prototype chain are copied directly onto the
+    // clone when it is created.
+    //
+    // Problematic tests can be fixed easily: Don't compare the object itself to the cloned reference, but create a
+    // second clone, and compare that.
+    //
+    // So instead of
+    //
+    //     expect( fooObject ).to.deep.equal( clonedFoo );
+    //
+    // use
+    //
+    //     expect( cloneDeep( fooObject ) ).to.deep.equal( clonedFoo );
+
     function cloneDeep ( obj ) {
         return jQuery.extend( true, {}, obj );
     }
@@ -299,7 +316,9 @@
 
                         // Outer model still holds a reference to the original inner model
                         exported.returnsInner = "overwrite the exported inner model";
-                        expect( outerModel.returnsInner() ).to.deep.equal( innerModelClone );
+
+                        // (For the use of cloneDeep in the test, see note above the cloneDeep function)
+                        expect( cloneDeep( outerModel.returnsInner() ) ).to.deep.equal( innerModelClone );
 
                     } );
 
@@ -337,7 +356,9 @@
                         outerModel["export"]();
 
                         // Inner model has been properly cloned
-                        expect( outerModel ).to.deep.equal( outerModelClone );
+                        //
+                        // (For the use of cloneDeep in the test, see note above the cloneDeep function)
+                        expect( cloneDeep( outerModel ) ).to.deep.equal( outerModelClone );
 
                     } );
 
@@ -357,7 +378,9 @@
 
                         // Middle model still holds a reference to the original inner model
                         exported.returnsInner = "overwrite the exported inner model";
-                        expect( middleModel.returnsInner() ).to.deep.equal( innerModelClone );
+
+                        // (For the use of cloneDeep in the test, see note above the cloneDeep function)
+                        expect( cloneDeep( middleModel.returnsInner() ) ).to.deep.equal( innerModelClone );
 
                     } );
 
@@ -378,7 +401,9 @@
 
                         // Outer model still holds a reference to the original middle model
                         exported.returnsInner = "overwrite the exported middle model";
-                        expect( outerModel.returnsInner() ).to.deep.equal( middleModelClone );
+
+                        // (For the use of cloneDeep in the test, see note above the cloneDeep function)
+                        expect( cloneDeep( outerModel.returnsInner() ) ).to.deep.equal( middleModelClone );
 
                     } );
 
@@ -448,7 +473,9 @@
                         var exported = model["export"]();
 
                         exported.containerAttribute = "overwrite the exported inner collection";
-                        expect( model.get( "containerAttribute" ) ).to.deep.equal( innerModelClone );
+
+                        // (For the use of cloneDeep in the test, see note above the cloneDeep function)
+                        expect( cloneDeep( model.get( "containerAttribute" ) ) ).to.deep.equal( innerModelClone );
 
                     } );
 
