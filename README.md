@@ -227,7 +227,7 @@ Also, by default, you can declare model properties as exportable. But model prop
 
 So in the vast majority of cases, you won't have the need to say `exportable: "someProperty"`. By turning on strict mode, you'll get an error thrown at you for trying. That may help to catch accidental assignments.
 
-Collections, by contrast, don't have attributes, and they don't provide a native way to have a property show up in a template. So here, `exportable: "someProperty"` makes sense, and indeed it will work just fine - even in strict mode.
+Collections, by contrast, don't have attributes, and they don't provide a native way to have a property show up in a template. So here, `exportable: "someProperty"` makes sense, and indeed it will work just fine – even in strict mode.
 
 ### For which Marionette view types does it work?
 
@@ -292,13 +292,15 @@ In case anything about the test and build process needs to be changed, have a lo
 
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
-## Supporting development
+## Facilitating development
 
 To my own surprise, [a kind soul][donations-idea] wanted to donate to one of my projects, but there hadn't been a link. [Now there is.][donations-paypal-link]
 
-Please don't feel obliged in the slightest. It's [MIT][license], and so it's free. That said, if you do want to support the maintenance and development of this component, or any of my [other open-source projects][hashchange-projects-overview], I _am_ thankful for your contribution.
+Please don't feel obliged in the slightest. The license here is [MIT][license], and so it's free. That said, if you do want to support the maintenance and development of this component, or any of my [other open-source projects][hashchange-projects-overview], I _am_ thankful for your contribution.
 
-Naturally, these things don't pay for themselves � not even remotely. The components I write aim to be well tested, performant, and reliable. That may not sound terribly fascinating, but at the end of the day, these attributes make all the difference in production. And maintaining that standard is rather costly, time-wise. That's why donations are welcome, no matter how small, and be it as nod of appreciation to keep spirits up. [Thank you!][donations-paypal-link]
+Naturally, these things don't pay for themselves – not even remotely. The components I write aim to be well tested, performant, and reliable. These qualities may not seem particularly fascinating, but I put a lot of emphasis on them because they make all the difference in production. They are also rather costly to maintain, time-wise.
+
+That's why donations are welcome, and be it as nod of appreciation to keep spirits up. [Thank you!][donations-paypal-link]
 
 [![Donate with Paypal][donations-paypal-button]][donations-paypal-link]
 
@@ -363,10 +365,10 @@ Copyright (c) 2014, 2015 Michael Heim.
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"
 [Grunt]: http://gruntjs.com/ "Grunt: The JavaScript Task Runner"
-[Karma]: http://karma-runner.github.io/ "Karma - Spectacular Test Runner for Javascript"
-[Mocha]: http://visionmedia.github.io/mocha/ "Mocha - the fun, simple, flexible JavaScript test framework"
+[Karma]: http://karma-runner.github.io/ "Karma – Spectacular Test Runner for Javascript"
+[Mocha]: http://visionmedia.github.io/mocha/ "Mocha – the fun, simple, flexible JavaScript test framework"
 [Chai]: http://chaijs.com/ "Chai: a BDD / TDD assertion library"
-[Sinon]: http://sinonjs.org/ "Sinon.JS - Versatile standalone test spies, stubs and mocks for JavaScript"
+[Sinon]: http://sinonjs.org/ "Sinon.JS – Versatile standalone test spies, stubs and mocks for JavaScript"
 [JSHint]: http://www.jshint.com/ "JSHint, a JavaScript Code Quality Tool"
 
 [1]: http://stackoverflow.com/a/10653468/508355 "Stack Overflow: How to access a calculated field of a backbone model from handlebars template?"
@@ -374,7 +376,7 @@ Copyright (c) 2014, 2015 Michael Heim.
 [3]: https://github.com/jashkenas/underscore/pull/595 "Underscore Pull Request #595: Deep copying with _.clone(obj, deep)"
 [4]: http://coding.smashingmagazine.com/2013/08/09/backbone-js-tips-patterns/ "Backbone.js Tips And Patterns: Perform Deep Copies Of Objects"
 [5]: https://github.com/bestiejs/lodash/issues/206 "lodash Issue #206: Underscore compatibility"
-[6]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords "MDN JavaScript Reference: Lexical grammar - Keywords"
+[6]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Keywords "MDN JavaScript Reference: Lexical grammar – Keywords"
 [7]: http://mathiasbynens.be/notes/javascript-properties "Unquoted property names / object keys in JavaScript"
 [8]: http://stackoverflow.com/questions/23105089/angular-q-catch-method-fails-in-ie8/23105836#23105836 "Stack Overflow answer: Reserved keywords in IE8 and Android 2.x"
 
@@ -382,7 +384,7 @@ Copyright (c) 2014, 2015 Michael Heim.
 [use-with-plain-backbone]: #but-i-dont-use-marionette "Using Backbone.Marionette.Export with plain Backbone"
 [backbone-model-attributes]: http://backbonejs.org/#Model-attributes "Backbone.Model attributes"
 
-[donations]: #supporting-development "Supporting development"
+[donations]: #facilitating-development "Facilitating development"
 [donations-idea]: https://github.com/hashchange/jquery.documentsize/issues/1 "jQuery.documentSize, issue #1: Thank you!"
 [donations-paypal-link]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RZR82U6QTKE8S "Donate with Paypal"
 [donations-paypal-button]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif "Donate with Paypal"
