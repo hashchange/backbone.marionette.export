@@ -873,6 +873,23 @@
 
             } );
 
+            it( 'can manipulate the "exportable" property itself before model state is turned into a hash', function () {
+
+                var Model = Backbone.Model.extend( {
+                    exportable: "droppedProperty",
+                    onBeforeExport: function () {
+                        this.exportable = "includedProperty";
+                    },
+                    droppedProperty: "value of dropped property",
+                    includedProperty: "value of dynamically included property"
+                } );
+                var model = new Model();
+
+                expect( model["export"]() ).not.to.have.a.property( 'droppedProperty' );
+                expect( model["export"]() ).to.have.a.property( 'includedProperty' ).with.a.string( "value of dynamically included property" );
+
+            } );
+
             it( 'runs before onExport()', function () {
 
                 var model = new Backbone.Model();

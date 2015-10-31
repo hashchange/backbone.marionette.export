@@ -200,9 +200,11 @@ Circular dependencies between your models and collections are contained by the r
 
 ### Complex data wrangling
 
-In case you have to change the model state, or collection state, before the model is handed over to a template, you can do whatever you need to do with `onBeforeExport`. Implement it, and it will be called before the data export kicks in. 
+In case you have to change the model state, or collection state, before the model is handed over to a template, you can do whatever you need to do with `onBeforeExport`. Implement it, and it will be called before the data export kicks in.
 
-Likewise, implement `onAfterExport` for any clean-up operations. When it is called, the data for templates is already finalized.
+`onBeforeExport` is fully separated from the actual export mechanism. You can even manipulate the `exportable` property itself and set it dynamically each time template data is requested.
+
+For any clean-up operations, implement `onAfterExport`. When it is called, the data for templates is already finalized.
 
 ### Strict mode
 
