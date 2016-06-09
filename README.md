@@ -308,6 +308,11 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 ## Release Notes
 
+### v2.1.5
+
+- Updated Backbone dependency
+- Updated build environment
+
 ### v2.1.3
 
 - Updated Backbone dependency
