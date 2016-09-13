@@ -17,7 +17,7 @@ requirejs.config( {
         "marionette-modern": "bower_components/marionette/lib/backbone.marionette",
         "marionette-legacy": "bower_components/marionette-legacy/lib/backbone.marionette",
 
-        "backbone.marionette.export": "dist/amd/backbone.marionette.export",
+        "backbone.marionette.export": "dist/backbone.marionette.export",
 
         "local.main": "demo/amd/main"
     },

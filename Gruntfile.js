@@ -87,8 +87,7 @@ module.exports = function (grunt) {
     preprocess: {
       build: {
         files: {
-          'dist/backbone.marionette.export.js' : 'src/backbone.marionette.export.js',
-          'dist/amd/backbone.marionette.export.js' : 'src/amd.js'
+          'dist/backbone.marionette.export.js' : 'src/backbone.marionette.export.js'
         }
       },
       interactive: {
@@ -114,10 +113,6 @@ module.exports = function (grunt) {
       build: {
         src: 'dist/backbone.marionette.export.js',
         dest: 'dist/backbone.marionette.export.js'
-      },
-      amd_banner: {
-        src: 'dist/amd/backbone.marionette.export.js',
-        dest: 'dist/amd/backbone.marionette.export.js'
       }
     },
 
@@ -128,10 +123,6 @@ module.exports = function (grunt) {
           except: ['jQuery', 'Zepto', 'Backbone', '_']
         },
         sourceMap: true
-      },
-      amd: {
-        src : 'dist/amd/backbone.marionette.export.js',
-        dest : 'dist/amd/backbone.marionette.export.min.js'
       },
       core: {
         src: 'dist/backbone.marionette.export.js',

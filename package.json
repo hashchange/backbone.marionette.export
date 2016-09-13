@@ -9,7 +9,7 @@
   },
   "author": "Michael Heim <heim@zeilenwechsel.de> (http://www.zeilenwechsel.de/)",
   "description": "Exposing Backbone model and collection methods to templates.",
-  "main": "dist/amd/backbone.marionette.export.js",
+  "main": "dist/backbone.marionette.export.js",
   "keywords": [
     "backbone",
     "marionette",
