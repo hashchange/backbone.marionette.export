@@ -44,7 +44,7 @@ Backbone.Marionette.Export does not cause any such side effects. After dropping 
 
 ### The basics
 
-Here is how it works, in its simplest form:
+Here is how it works, in its simplest form. The examples below use the `Marionette.ItemView` type of Marionette 2. If you use Marionette 3, just substitute the successor, `Marionette.View`, for it.
 
 ```html    
 <script id="item-view-template" type="text/x-handlebars-template">
@@ -130,9 +130,13 @@ var view = new Marionette.ItemView ({
 view.render();
 ```
 
-The collection data is provided to the template as it always is: in an `items` array. That is the [standard behaviour][2] of a Marionette ItemView and unrelated to Backbone.Marionette.Export.
+The collection data is provided to the template as it always is: in an `items` array. That is the [standard behaviour][2] of a Marionette `ItemView` (or `View` in Marionette 3) and unrelated to Backbone.Marionette.Export.
 
 Besides being an array, `items` is an object like any other. Arbitrary properties can be added to it. And that is exactly what happened to the exported method, `foo`.
+
+###### Demo
+
+There is an interactive demo you can play around with. The demo is kept simple, and is a good way to explore the features of Backbone.Cycle. Check it out at [JSBin][demo-jsbin] or [Codepen][demo-codepen].
 
 ### Recursion
 
@@ -308,6 +312,12 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 ## Release Notes
 
+### v2.1.6
+
+- Added support for Marionette 3
+- Version is exposed in `Backbone.Model.prototype.export.global.version` and `Backbone.Collection.prototype.export.global.version`
+- AMD demo allows testing r.js output
+
 ### v2.1.5
 
 - Updated Backbone dependency
@@ -362,6 +372,9 @@ Copyright (c) 2014-2016 Michael Heim.
 [dist-amd-dev]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/amd/backbone.marionette.export.js "backbone.marionette.export.js, AMD build"
 [dist-amd-prod]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/amd/backbone.marionette.export.min.js "backbone.marionette.export.min.js, AMD build"
 
+[demo-jsbin]: http://jsbin.com/hoyome/7/edit?js,output "Backbone.Marionette.Export demo (AMD) – JSBin"
+[demo-codepen]: http://codepen.io/hashchange/pen/jPjvoG "Backbone.Marionette.Export demo (AMD) – Codepen"
+
 [Backbone]: http://backbonejs.org/ "Backbone.js"
 [Marionette]: https://github.com/marionettejs/backbone.marionette#readme "Marionette: a composite application library for Backbone.js"
 [Underscore]: http://underscorejs.org/ "Underscore"
@@ -373,13 +386,13 @@ Copyright (c) 2014-2016 Michael Heim.
 [npm]: https://npmjs.org/ "npm: Node Packaged Modules"
 [Grunt]: http://gruntjs.com/ "Grunt: The JavaScript Task Runner"
 [Karma]: http://karma-runner.github.io/ "Karma – Spectacular Test Runner for Javascript"
-[Mocha]: http://visionmedia.github.io/mocha/ "Mocha – the fun, simple, flexible JavaScript test framework"
+[Mocha]: http://mochajs.org/ "Mocha – the fun, simple, flexible JavaScript test framework"
 [Chai]: http://chaijs.com/ "Chai: a BDD / TDD assertion library"
 [Sinon]: http://sinonjs.org/ "Sinon.JS – Versatile standalone test spies, stubs and mocks for JavaScript"
 [JSHint]: http://www.jshint.com/ "JSHint, a JavaScript Code Quality Tool"
 
 [1]: http://stackoverflow.com/a/10653468/508355 "Stack Overflow: How to access a calculated field of a backbone model from handlebars template?"
-[2]: https://github.com/marionettejs/backbone.marionette/blob/master/docs/marionette.itemview.md#rendering-a-collection-in-an-itemview "Rendering A Collection In An ItemView"
+[2]: https://github.com/marionettejs/backbone.marionette/blob/master/docs/marionette.view.md#advanced-view-topics "Marionette.View: Advanced View topics"
 [3]: https://github.com/jashkenas/underscore/pull/595 "Underscore Pull Request #595: Deep copying with _.clone(obj, deep)"
 [4]: http://coding.smashingmagazine.com/2013/08/09/backbone-js-tips-patterns/ "Backbone.js Tips And Patterns: Perform Deep Copies Of Objects"
 [5]: https://github.com/bestiejs/lodash/issues/206 "lodash Issue #206: Underscore compatibility"
