@@ -29,18 +29,14 @@ module.exports = function(config) {
 
       // Component dependencies
 
-      // Using the latest Marionette by default. Switch to Marionette 2.x as needed, or run Karma with the config for
-      // legacy Marionette.
-      //
-      // NB Tests run through the interactive web interface use Marionette 2.x. Use `grunt interactive` or `grunt webtest`
-      // for them.
+      // Using legacy Marionette (2.x) here.
 
       'bower_components/underscore/underscore.js',
       'bower_components/backbone/backbone.js',
 
-      // 'bower_components/marionette-legacy/lib/backbone.marionette.js',
-      'bower_components/backbone.radio/build/backbone.radio.js',
-      'bower_components/marionette/lib/backbone.marionette.js',
+      'bower_components/marionette-legacy/lib/backbone.marionette.js',
+      // 'bower_components/backbone.radio/build/backbone.radio.js',
+      // 'bower_components/marionette/lib/backbone.marionette.js',
 
       // Comment the lib-other files out to prevent Lodash from loading, and run the tests with Underscore.
       //

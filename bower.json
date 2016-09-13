@@ -34,7 +34,8 @@
   ],
   "devDependencies": {
     "jquery": "~3.1.0",
-    "marionette": "^1.1.0 <1.9.0 || ^2.0.0"
+    "marionette-legacy": "marionette#^2.0.0",
+    "marionette": "^3.0.0"
   },
   "dependencies": {
     "backbone": "^1.0.0 <1.4.0",
