@@ -8,21 +8,25 @@ If you are a happy user of this project already, you can support its development
 
 ## Setup
 
-Include backbone.marionette.export.js after Backbone and Marionette (if you use Marionette). The stable version of Backbone.Marionette.Export is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install backbone.marionette.export`. With npm, it is `npm install backbone.marionette.export`.
+Include backbone.marionette.export.js after Backbone, and after Marionette (if you use Marionette).
 
-Because Marionette is optional, it is not required as a dependency in the AMD/CJS build of Backbone.Marionette.Export. Your own code must make sure that Marionette is loaded first. With [RequireJS][], for instance, you'd use [a shim][RequireJS-shim] to express the dependency:
+The stable version of Backbone.Marionette.Export is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]). If you use Bower, fetch the files with `bower install backbone.marionette.export`. With npm, it is `npm install backbone.marionette.export`.
+
+###### Module systems (AMD, CJS)
+
+Because Marionette is optional, it is not defined as a dependency in Backbone.Marionette.Export. Your own code must make sure that Marionette is loaded first. With [RequireJS][], for instance, use [a shim][RequireJS-shim] to express the dependency:
 
 ```js
 requirejs.config({
-    // ...
-
     shim: {
-        'backbone.marionette.export': {
-            deps: ['marionette']
-        }
+        "backbone.marionette.export": ["marionette"]
     }
 });
 ```
+
+Backbone.Marionette.Export does not export a meaningful value. It solely lives in the Backbone namespace.
+
+###### Underscore vs. Lodash
 
 If you need to handle deeply nested structures recursively, swap out Underscore for a compatible Lo-dash build with _.cloneDeep support. [See below](#enhanced-recursion-support-with-lo-dash-and-_clonedeep).
 
@@ -312,6 +316,10 @@ That's why donations are welcome, and be it as nod of appreciation to keep spiri
 
 ## Release Notes
 
+### v3.0.0
+
+- Removed the separate AMD/Node builds in `dist/amd`. Module systems and browser globals are now supported by the same file, `dist/backbone.marionette.export.js` (or `.min.js`)
+
 ### v2.1.6
 
 - Added support for Marionette 3
@@ -369,8 +377,6 @@ Copyright (c) 2014-2016 Michael Heim.
 
 [dist-dev]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/backbone.marionette.export.js "backbone.marionette.export.js"
 [dist-prod]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/backbone.marionette.export.min.js "backbone.marionette.export.min.js"
-[dist-amd-dev]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/amd/backbone.marionette.export.js "backbone.marionette.export.js, AMD build"
-[dist-amd-prod]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/amd/backbone.marionette.export.min.js "backbone.marionette.export.min.js, AMD build"
 
 [demo-jsbin]: http://jsbin.com/hoyome/7/edit?js,output "Backbone.Marionette.Export demo (AMD) – JSBin"
 [demo-codepen]: http://codepen.io/hashchange/pen/jPjvoG "Backbone.Marionette.Export demo (AMD) – Codepen"
