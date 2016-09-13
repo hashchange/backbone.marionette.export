@@ -38,7 +38,10 @@
     }
 
     // Capture all native array properties.
-    var nativeArrayProperties =  listAllProperties( [] );
+    var nativeArrayProperties =  listAllProperties( [] ),
+
+        // Get the Marionette base view (Marionette.ItemView for legacy Marionette, Marionette.View for modern)
+        MarionetteBaseView = Backbone.Marionette && ( Backbone.Marionette.ItemView || Backbone.Marionette.View );
 
     /**
      * Is called before export(). Use it to manipulate or add state before export. No-op by default, implement as
@@ -233,7 +236,7 @@
 
     if ( Backbone.Marionette ) {
 
-        Backbone.Marionette.ItemView.prototype.serializeData = Backbone.Marionette.CompositeView.prototype.serializeData = function () {
+        MarionetteBaseView.prototype.serializeData = Backbone.Marionette.CompositeView.prototype.serializeData = function () {
             // Largely duplicating the original serializeData() method in Marionette.ItemView, but using Model.export
             // instead of Model.toJSON as a data source if Model.export is available. Ditto for Collection.export.
             //
