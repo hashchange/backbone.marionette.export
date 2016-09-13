@@ -1,6 +1,6 @@
-/* Tests for Marionette.ItemView */
-'use strict';
+/*global describe, it */
 (function () {
+    "use strict";
 
     describe( 'Marionette.CompositeView automatically provides the output of export() to its template.', function () {
 

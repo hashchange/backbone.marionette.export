@@ -1,7 +1,6 @@
 /*global describe, it */
-'use strict';
-
 (function () {
+    "use strict";
 
     var it_accepts = it,
         it_throws_an_error = it,
