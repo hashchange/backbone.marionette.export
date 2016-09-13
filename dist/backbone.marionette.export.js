@@ -1,4 +1,4 @@
-// Backbone.Marionette.Export, v2.1.5
+// Backbone.Marionette.Export, v2.1.6
 // Copyright (c) 2013-2016 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.marionette.export
@@ -43,7 +43,10 @@
     }
 
     // Capture all native array properties.
-    var nativeArrayProperties =  listAllProperties( [] );
+    var nativeArrayProperties =  listAllProperties( [] ),
+
+        // Get the Marionette base view (Marionette.ItemView for legacy Marionette, Marionette.View for modern)
+        MarionetteBaseView = Backbone.Marionette && ( Backbone.Marionette.ItemView || Backbone.Marionette.View );
 
     /**
      * Is called before export(). Use it to manipulate or add state before export. No-op by default, implement as
@@ -232,12 +235,13 @@
 
     Backbone.Model.prototype["export"].global = Backbone.Collection.prototype["export"].global = {
         maxHops: 4,
-        strict: false
+        strict: false,
+        version: "2.1.6"
     };
 
     if ( Backbone.Marionette ) {
 
-        Backbone.Marionette.ItemView.prototype.serializeData = Backbone.Marionette.CompositeView.prototype.serializeData = function () {
+        MarionetteBaseView.prototype.serializeData = Backbone.Marionette.CompositeView.prototype.serializeData = function () {
             // Largely duplicating the original serializeData() method in Marionette.ItemView, but using Model.export
             // instead of Model.toJSON as a data source if Model.export is available. Ditto for Collection.export.
             //
