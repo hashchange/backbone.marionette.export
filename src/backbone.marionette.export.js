@@ -227,7 +227,8 @@
 
     Backbone.Model.prototype["export"].global = Backbone.Collection.prototype["export"].global = {
         maxHops: 4,
-        strict: false
+        strict: false,
+        version: "__COMPONENT_VERSION_PLACEHOLDER__"
     };
 
     if ( Backbone.Marionette ) {
