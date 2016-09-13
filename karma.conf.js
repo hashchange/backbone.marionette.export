@@ -25,7 +25,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       // Test dependencies
-      'node_modules/jquery/dist/jquery.js',
+      'bower_components/jquery/dist/jquery.js',
 
       // Component dependencies
       'bower_components/underscore/underscore.js',
