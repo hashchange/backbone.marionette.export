@@ -2,13 +2,15 @@
 (function () {
     "use strict";
 
-    describe( 'Marionette.ItemView automatically provides the output of export() to its template.', function () {
+    describe( 'Marionette.View (or .ItemView) automatically provides the output of export() to its template.', function () {
 
         var ItemView;
 
         beforeEach( function () {
 
-            ItemView = Marionette.ItemView.extend( {
+            var MarionetteBaseView = Marionette.ItemView || Marionette.View;    // supporting both Marionette 2 and 3
+
+            ItemView = MarionetteBaseView.extend( {
                 template: function ( injectedData ) {
                     return _.template( 'some template HTML', injectedData );
                 }

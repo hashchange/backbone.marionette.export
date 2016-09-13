@@ -9,7 +9,9 @@ require( [
 
 ], function ( _, Backbone ) {
 
-    var Model = Backbone.Model.extend( {
+    var MarionetteBaseView = Backbone.Marionette.ItemView || Backbone.Marionette.View,    // supporting both Marionette 2 and 3
+
+        Model = Backbone.Model.extend( {
             exportable: "someMethod",
 
             onExport: function ( data ) {
@@ -36,7 +38,7 @@ require( [
         collection = new Collection( [ m1, m2, m3 ] ),
 
         DataView = Backbone.Marionette.CompositeView.extend( {
-            childView: Backbone.Marionette.ItemView.extend( {
+            childView: MarionetteBaseView.extend( {
                 tagName: "li",
                 template: "#model-template"
             } ),
