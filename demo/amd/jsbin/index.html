@@ -3,24 +3,25 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 
-    <title>Backbone.Marionette.Export 2.1.4, demo (AMD)</title>
-    <meta name="description" content="Backbone.Marionette.Export 2.1.4, demo (AMD)">
+    <title>Backbone.Marionette.Export 2.1.6, demo (AMD)</title>
+    <meta name="description" content="Backbone.Marionette.Export 2.1.6, demo (AMD)">
 
     <!-- ATTN Foundation loaded without JS - stay clear of JS-driven widgets, or add the JS setup -->
     <!--
         ATTN jQuery 1.x is used here, making the demo compatible with oldIE. As a side effect,
         Foundation 5 JS can't be used reliably (requires jQuery 2.x). Stay clear, or switch to
-        jQuery 2.x, available in node_modules.
+        jQuery 2.x.
     -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/normalize.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/foundation.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/normalize.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/foundation.css">
 
-    <link rel="stylesheet" href="https://cdn.rawgit.com/hashchange/backbone.marionette.export/2.1.4/demo/amd/amd.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/hashchange/backbone.marionette.export/2.1.6/demo/common.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/hashchange/backbone.marionette.export/2.1.6/demo/amd/amd.css">
 
     <!-- Fix HTML5 tags in oldIE and other lacking legacy browsers -->
-    <script src="http://modernizr.com/downloads/modernizr-latest.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
 
     <script id="collection-template" type="text/x-template">
         <div class="row">
@@ -40,11 +41,18 @@
 </head>
 <body>
 
+    <section id="header">
+        <h1 class="row">Backbone.Marionette.Export</h1>
+        <h2 class="row">Demo (AMD)</h2>
+    </section>
+
     <section id="main">
         <!-- body content here... -->
     </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.js"></script>
-    <script src="https://cdn.rawgit.com/hashchange/backbone.marionette.export/2.1.4/demo/amd/jsbin/require-config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.js"></script>
+    <script src="https://cdn.rawgit.com/hashchange/backbone.marionette.export/2.1.6/demo/amd/jsbin/map-config.js"></script>
+    <script src="https://cdn.rawgit.com/hashchange/backbone.marionette.export/2.1.6/demo/amd/rjs/output/parts/vendor.js"></script>
+
 </body>
 </html>
