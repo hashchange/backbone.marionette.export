@@ -373,7 +373,7 @@ Bumping the major version is necessary because of changes to the public API, eve
 
 MIT.
 
-Copyright (c) 2014-2016 Michael Heim.
+Copyright (c) 2014-2017 Michael Heim.
 
 [dist-dev]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/backbone.marionette.export.js "backbone.marionette.export.js"
 [dist-prod]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/backbone.marionette.export.min.js "backbone.marionette.export.min.js"
