@@ -4,8 +4,6 @@ Backbone.Marionette.Export is a plugin for [Backbone][], and specifically target
 
 The name of the plugin has turned out to be a bit of a misnomer, though. Backbone.Marionette.Export does not depend on Marionette and [works great without it][use-with-plain-backbone]. In fact, Backbone.Marionette.Export is [just as useful][use-case] in projects based on plain Backbone.
 
-If you are a happy user of this project already, you can support its development by [donating to it][donations]. You absolutely don't have to, of course, but perhaps it is something you [might actually want to do][donations].
-
 ## Setup
 
 Include backbone.marionette.export.js after Backbone, and after Marionette (if you use Marionette).
@@ -302,18 +300,6 @@ In case anything about the test and build process needs to be changed, have a lo
 
 New test files in the `spec` directory are picked up automatically, no need to edit the configuration for that.
 
-## Facilitating development
-
-To my own surprise, [a kind soul][donations-idea] wanted to donate to one of my projects, but there hadn't been a link. [Now there is.][donations-paypal-link]
-
-Please don't feel obliged in the slightest. The license here is [MIT][license], and so it's free. That said, if you do want to support the maintenance and development of this component, or any of my [other open-source projects][hashchange-projects-overview], I _am_ thankful for your contribution.
-
-Naturally, these things don't pay for themselves – not even remotely. The components I write aim to be well tested, performant, and reliable. These qualities may not seem particularly fascinating, but I put a lot of emphasis on them because they make all the difference in production. They are also rather costly to maintain, time-wise.
-
-That's why donations are welcome, and be it as nod of appreciation to keep spirits up. [Thank you!][donations-paypal-link]
-
-[![Donate with Paypal][donations-paypal-button]][donations-paypal-link]
-
 ## Release Notes
 
 ### v3.0.0
@@ -373,7 +359,7 @@ Bumping the major version is necessary because of changes to the public API, eve
 
 MIT.
 
-Copyright (c) 2014-2017 Michael Heim.
+Copyright (c) 2014-2024 Michael Heim.
 
 [dist-dev]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/backbone.marionette.export.js "backbone.marionette.export.js"
 [dist-prod]: https://raw.github.com/hashchange/backbone.marionette.export/master/dist/backbone.marionette.export.min.js "backbone.marionette.export.min.js"
@@ -410,9 +396,5 @@ Copyright (c) 2014-2017 Michael Heim.
 [use-with-plain-backbone]: #but-i-dont-use-marionette "Using Backbone.Marionette.Export with plain Backbone"
 [backbone-model-attributes]: http://backbonejs.org/#Model-attributes "Backbone.Model attributes"
 
-[donations]: #facilitating-development "Facilitating development"
-[donations-idea]: https://github.com/hashchange/jquery.documentsize/issues/1 "jQuery.documentSize, issue #1: Thank you!"
-[donations-paypal-link]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RZR82U6QTKE8S "Donate with Paypal"
-[donations-paypal-button]: https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif "Donate with Paypal"
 [license]: #license "License"
 [hashchange-projects-overview]: http://hashchange.github.io/ "Hacking the front end: Backbone, Marionette, jQuery and the DOM. An overview of open-source projects by @hashchange."
